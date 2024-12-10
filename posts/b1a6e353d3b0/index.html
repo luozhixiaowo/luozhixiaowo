@@ -1,0 +1,488 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>BS架构通用质量保障工作流程 | 洛栀の小窝</title><meta name="keywords" content="BS架构,流程"><meta name="author" content="洛栀"><meta name="copyright" content="洛栀"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="质量保障是做好产品十分重要的一步，但是为了快速起项目形成业务，很多项目在设计之初全由前后端开发人员自测，稳定上线后才补上质量保障侧的内容。本文旨在梳理一套BS架构产品的通用质量保障模型。 产品设计与技术评审阶段在设计阶段，QA应当在各评审会1小时前开始阅读并评论方案，以此提高会议效率并尽可能发现其中问题。 产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审在此阶段，开发（RD）与测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BS架构通用质量保障工作流程">
+<meta property="og:url" content="https://blog.luozhinet.com/posts/b1a6e353d3b0/index.html">
+<meta property="og:site_name" content="洛栀の小窝">
+<meta property="og:description" content="质量保障是做好产品十分重要的一步，但是为了快速起项目形成业务，很多项目在设计之初全由前后端开发人员自测，稳定上线后才补上质量保障侧的内容。本文旨在梳理一套BS架构产品的通用质量保障模型。 产品设计与技术评审阶段在设计阶段，QA应当在各评审会1小时前开始阅读并评论方案，以此提高会议效率并尽可能发现其中问题。 产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审在此阶段，开发（RD）与测试">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jsdelivr.luozhinet.com/gh/miloce/img@main/p.png">
+<meta property="article:published_time" content="2022-05-12T08:32:00.000Z">
+<meta property="article:modified_time" content="2023-01-13T14:56:30.000Z">
+<meta property="article:author" content="洛栀">
+<meta property="article:tag" content="BS架构">
+<meta property="article:tag" content="流程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jsdelivr.luozhinet.com/gh/miloce/img@main/p.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://blog.luozhinet.com/posts/b1a6e353d3b0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="txqQxPhST9jFL0K2"/><link rel="manifest" href="/manifest.json"/><meta name="msapplication-TileColor" content="#212121"/><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/favicon-16x16.png"/><link rel="mask-icon" href="/img/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://jsdelivr.luozhinet.com/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://jsdelivr.luozhinet.com/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://jsdelivr.luozhinet.com/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8a61754693ac9e7e91cd8cfc00cf88e5";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"It has been","messageNext":"days since the last update, the content of the article may be outdated."},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":20,"languages":{"author":"作者: 洛栀","link":"链接: ","source":"来源: 洛栀の小窝","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://jsdelivr.luozhinet.com/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://jsdelivr.luozhinet.com/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'BS架构通用质量保障工作流程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-01-13 22:56:30'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const now = new Date()
+          const hour = now.getHours()
+          const isNight = hour <= 6 || hour >= 18
+          if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+          else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta http-equiv='content-language' content='zh-cn'><meta name='description' content='Blog.Luozhinet.com - 洛栀的学习分享博客。'><link rel="stylesheet" href="/css/ycmusic.css"  media="defer" onload="this.media='all'"><link rel="stylesheet" href="/css/universe.css"><link rel="stylesheet" href="/css/test.css"><link rel="stylesheet" href="/css/custom.css"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7237954999881644" crossorigin="anonymous"></script><svg aria-hidden="true" style="position:absolute; overflow:hidden; width:0; height:0"><symbol id="icon-sun" viewBox="0 0 1024 1024"><path d="M960 512l-128 128v192h-192l-128 128-128-128H192v-192l-128-128 128-128V192h192l128-128 128 128h192v192z" fill="#FFD878" p-id="8420"></path><path d="M736 512a224 224 0 1 0-448 0 224 224 0 1 0 448 0z" fill="#FFE4A9" p-id="8421"></path><path d="M512 109.248L626.752 224H800v173.248L914.752 512 800 626.752V800h-173.248L512 914.752 397.248 800H224v-173.248L109.248 512 224 397.248V224h173.248L512 109.248M512 64l-128 128H192v192l-128 128 128 128v192h192l128 128 128-128h192v-192l128-128-128-128V192h-192l-128-128z" fill="#4D5152" p-id="8422"></path><path d="M512 320c105.888 0 192 86.112 192 192s-86.112 192-192 192-192-86.112-192-192 86.112-192 192-192m0-32a224 224 0 1 0 0 448 224 224 0 0 0 0-448z" fill="#4D5152" p-id="8423"></path></symbol><symbol id="icon-moon" viewBox="0 0 1024 1024"><path d="M611.370667 167.082667a445.013333 445.013333 0 0 1-38.4 161.834666 477.824 477.824 0 0 1-244.736 244.394667 445.141333 445.141333 0 0 1-161.109334 38.058667 85.077333 85.077333 0 0 0-65.066666 135.722666A462.08 462.08 0 1 0 747.093333 102.058667a85.077333 85.077333 0 0 0-135.722666 65.024z" fill="#FFB531" p-id="11345"></path><path d="M329.728 274.133333l35.157333-35.157333a21.333333 21.333333 0 1 0-30.165333-30.165333l-35.157333 35.157333-35.114667-35.157333a21.333333 21.333333 0 0 0-30.165333 30.165333l35.114666 35.157333-35.114666 35.157334a21.333333 21.333333 0 1 0 30.165333 30.165333l35.114667-35.157333 35.157333 35.157333a21.333333 21.333333 0 1 0 30.165333-30.165333z" fill="#030835" p-id="11346"></path></symbol></svg><a onclick="switchNightMode()" class="icon-V hidden" title="切换日间/夜间模式"><svg width="48" height="48" viewBox="0 0 1024 1024"><use id="modeicon" xlink:href="#icon-moon"></use></svg></a><!-- hexo injector head_end start --><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Zfour/hexo-electric-clock@1.0.6/clock.css"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="洛栀の小窝" type="application/atom+xml">
+</head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="wizard-scene"><div class="wizard-objects"><div class="wizard-square"></div><div class="wizard-circle"></div><div class="wizard-triangle"></div></div><div class="wizard"><div class="wizard-body"></div><div class="wizard-right-arm"><div class="wizard-right-hand"></div></div><div class="wizard-left-arm"><div class="wizard-left-hand"></div></div><div class="wizard-head"><div class="wizard-beard"></div><div class="wizard-face"><div class="wizard-adds"></div></div><div class="wizard-hat"><div class="wizard-hat-of-the-hat"></div><div class="wizard-four-point-star --first"></div><div class="wizard-four-point-star --second"></div><div class="wizard-four-point-star --third"></div></div></div></div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "/img/planeloading.jpg" data-lazy-src="https://q1.qlogo.cn/g?b=qq&amp;nk=2855595515&amp;s=640" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">91</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://check.luozhinet.com/"><i class="fa-fw fas fa-chart-simple"></i><span> 网站监控</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://jsdelivr.luozhinet.com/gh/miloce/img@main/p.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">洛栀の小窝</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://check.luozhinet.com/"><i class="fa-fw fas fa-chart-simple"></i><span> 网站监控</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">BS架构通用质量保障工作流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-05-12T08:32:00.000Z" title="发表于 2022-05-12 16:32:00">2022-05-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-01-13T14:56:30.000Z" title="更新于 2023-01-13 22:56:30">2023-01-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/">技术教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/posts/b1a6e353d3b0/#post-comment"><span id="twikoo-count"></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>质量保障是做好产品十分重要的一步，但是为了快速起项目形成业务，很多项目在设计之初全由前后端开发人员自测，稳定上线后才补上质量保障侧的内容。本文旨在梳理一套BS架构产品的通用质量保障模型。</p>
+<h1 id="产品设计与技术评审阶段"><a href="#产品设计与技术评审阶段" class="headerlink" title="产品设计与技术评审阶段"></a>产品设计与技术评审阶段</h1><p>在设计阶段，QA应当在各评审会1小时前开始阅读并评论方案，以此提高会议效率并尽可能发现其中问题。</p>
+<h2 id="产品定义文档（PRD）评审-x2F-用户体验设计（UED）评审"><a href="#产品定义文档（PRD）评审-x2F-用户体验设计（UED）评审" class="headerlink" title="产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审"></a>产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审</h2><p>在此阶段，开发（RD）与测试（QA）人员应当替PRD&#x2F;UED捉虫，寻找PRD&#x2F;UED当中的缺漏和未定义行为。在开发之前就尽量完善PRD到RD、QA没有疑问。举个例子：</p>
+<p>需求名为“为搜索框增加搜索历史记录与搜索建议”，PRD中没有显式说明该需求的“记录的历史记录”是点击搜索按钮、按下回车哪一种方式触发；也没有说明搜索历史记录记录的是用户所有搜索行为还是仅记录用户点击搜索建议后产生的搜索行为。这样RD可能会理解&#x2F;曲解PRD，只记录点击搜索建议以后的搜索关键词。显然从用户视角这样的产品很奇怪，但是从RD视角来看“反正PRD这里没定义，怎么好做怎么来呗”。这样的厚度哦就是功能做出来PM发现和自己想的不一样，用户用起来不爽。如果在需求评审阶段就能解释清楚需求定义不明确的内容，这种问题就能大大减少。</p>
+<p>一些常见的思考发散方向为：</p>
+<table>
+<thead>
+<tr>
+<th>方向名</th>
+<th>发散举例</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>权限控制</td>
+<td>这个需求不需要做权限控制吗</td>
+<td>防止需要控制的功能PM忘记做权限控制，或新功能需要收缩权限但是忘了或者没注意</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>这个需求埋点设计成这样是不是不合适</td>
+<td>埋点放在哪里、怎么触发才能达成PM的需求，收集到他们需要的数据需要一定的前端常识，而PM不一定有相关技术积累</td>
+</tr>
+<tr>
+<td>交互逻辑</td>
+<td>当用户没有某某权限时，这个按钮是否需要置灰</td>
+<td>有些小需求没有UED直接参与，一些展示逻辑PM想的可能不会很全，需要问清楚</td>
+</tr>
+<tr>
+<td>边缘案例</td>
+<td>当子节点数量太多，这个页面下半截会全部被子节点遮挡，要不要加个max-height</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>设计过于复杂&#x2F;简单</td>
+<td>这个功能可以通过和某某现存功能集成的方式实现，不单独开一个页面是否可行？（反之亦然）否则实现成本会太高&#x2F;维护成本会太高</td>
+<td>PM可能不会考虑技术上可以通过耦合&#x2F;解耦合降低系统维护和开发&#x2F;测试成本</td>
+</tr>
+</tbody></table>
+<p>值得注意的是，除非需求太离谱，**不要轻易质疑PM这个需求有什么意义**。我们研发人员如果没有去和用户做调研，不知道客户在想什么就去拍脑袋抢PM的工作只会让PM觉得你很烦。</p>
+<h2 id="技术评审"><a href="#技术评审" class="headerlink" title="技术评审"></a>技术评审</h2><p>一般而言PM不具备很强的技术背景，技术评审中PM会难以捕捉RD设计的方案中可能与PRD不同的地方；因此QA作为技术人员，应仔细评估技术方案能否覆盖整个需求。有研发相关知识的QA更应当就自己理解的技术难点向RD提问来提前暴露排期、技术设计中的漏洞。一些常见的思考方式有：</p>
+<table>
+<thead>
+<tr>
+<th>方向名</th>
+<th>发散举例</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性能</td>
+<td>接口这样设计有可能性能不足？这样改接口对性能有多少影响</td>
+<td>性能应当是后端考虑的重要问题，但是如果他们没有考虑，QA要替PM问道</td>
+</tr>
+<tr>
+<td>数据安全</td>
+<td>这些东西放在local storage是否合理，会不会导致泄露或权限控制失败？</td>
+<td>防止RD实现的时候只考虑实现难易程度，不考虑安全性</td>
+</tr>
+<tr>
+<td>实现建议</td>
+<td>最近在推行自动化，请在代码中添加ID等识别符方便QA定位元素</td>
+<td>给前端元素加id、给后端代码加探针都是对前后端没有直接意义但是对整个产品质量保障有重大意义的事情。</td>
+</tr>
+<tr>
+<td>边缘案例</td>
+<td>当子节点数量太多，这个页面下半截会全部被子节点遮挡，要不要加个max-height</td>
+<td>同产品方案评审</td>
+</tr>
+</tbody></table>
+<h2 id="测试用例评审"><a href="#测试用例评审" class="headerlink" title="测试用例评审"></a>测试用例评审</h2><p>测试用例评审的最重要目的是告知RD哪些测试用例需要在交付QA前自行测试完成——这些测试用例被称为“自测用例”；其次，测试用例评审中团队内其他角色可以站在他们的视角上为QA提供更多思路完善测试用例。自测用例的作用是为研发交付测试的产品设置准入门槛，防止研发写了一堆bug以后自己也没试过就直接丢给QA，消耗QA过多人力做重复而无用的工作。自测用例应当覆盖该功能的所有核心要素和最直接影响用户体验的界面组件。但是，自测用例不应该超出PRD显式定义的范畴，覆盖过大面积的自测用例会让RD心力憔悴，也会降低RD充分自测的意愿。</p>
+<h1 id="研发阶段"><a href="#研发阶段" class="headerlink" title="研发阶段"></a>研发阶段</h1><p>研发阶段QA参与相对较少，主要由RD遵守预先设置的质量保障规范来保障前期质量。当然这不意味着在需求开发的时候QA没事情做。QA一般可以在此时完成已上线产品功能的自动化覆盖、巡检和其他未完成的质量管理流程建设。</p>
+<h2 id="代码规范"><a href="#代码规范" class="headerlink" title="代码规范"></a>代码规范</h2><p>严格遵守PEP； 使用TypeScript替代JS；使用ESLint并致力于消除绝大多数error&#x2F;warning；正确命名变量并在弱类型语言&#x2F;动态类型语言中主动使用类型定义等代码编写策略都可以减少意外的问题。一般而言公司会有编写代码的标准流程，团队应在自身实际情况的基础上修改、优化规范并努力执行。</p>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><p>单元测试是<strong>测试单个函数</strong>逻辑是否正确必不可少的部分，单元测试一般由RD团队编写，并尽可能覆盖功能的每个函数。做单元测试时，所有数据全部使用假数据（Mock），所有用例跑在本地，着眼于单个函数内部逻辑而非多个组件之间的联系。</p>
+<p>单元测试一般应占到开发实践20%以上.</p>
+<h2 id="集成测试"><a href="#集成测试" class="headerlink" title="集成测试"></a>集成测试</h2><p>在交付QA前，RD应当根据自测用例列表将集成好的前后端试用、测试一遍。这一过程可以手动进行，也可以通过运行已有的自动化测试用例作回归，只对增量手动测试。</p>
+<p>集成测试的自动化可以考虑QA与RD共建，RD做最低限度的、仅包含自测用例的集成测试；其余边缘、发散用例由QA自动化。</p>
+<h2 id="代码审查"><a href="#代码审查" class="headerlink" title="代码审查"></a>代码审查</h2><p>代码审查不仅要做，还应该好好做。交叉代码审核有利于找出低级编码错误、统一代码风格、严格落实编码规范。这一过程主要在RD内部进行。</p>
+<h1 id="测试阶段"><a href="#测试阶段" class="headerlink" title="测试阶段"></a>测试阶段</h1><p>测试阶段QA应按照基本的工作规范完成端到端手工、自动化测试。根据测试情况对项目做质量评估，决定是否能交付PM验收或是否拒绝RD提测。</p>
+<p>拒绝RD提测一般由于过多测试用例失败或核心流程没走通就提测。</p>
+<h1 id="上线流程管控"><a href="#上线流程管控" class="headerlink" title="上线流程管控"></a>上线流程管控</h1><p>代码在本地跑的通不代表代码上线能跑，QA验收了也不代表真的发现了所有的bug。因此，上线流程管控是必不可少的。在上线流程中，QA和项目组长可以通过一些自动化或流程管理手段减少或消除上线风险。</p>
+<h2 id="CICD"><a href="#CICD" class="headerlink" title="CICD"></a>CICD</h2><p>现代软件开发流程为了减轻编译上线中的重复劳动一般都会配备基本的持续集成开发流水线，在流水线中，我们可以通过添加自动化测试和手动确认卡点来进行各类上线前的检查。</p>
+<p>可能你会问，我们之前做了很多手工和自动化测试了，有必要在临上线还要做卡点检查呢？答案是有必要——一个迭代不会只做一个需求，而测试阶段每个需求是独立测试的。在上线过程中涉及到代码合并、配置文件增删，很有可能出现牵一发而动全身的问题。在这个阶段，我们可以通过下面的节点来增强稳定性</p>
+<ol>
+<li>自动化回归测试节点<br>在这个节点，我们通过运行已有的API自动化、UI自动化、Diff测试、压力测试脚本检查本次上新的功能有没有影响已上线逻辑、有没有导致线上性能劣化。</li>
+<li>小流量&#x2F;灰度测试<br>当自动化测试没有发现问题，对于多机房&#x2F;多集群服务，我们可以先在一个机房的一台机器或部分机器部署服务并在前端实际体验一下新旧业务的核心流程是否出现问题。人在流程中永远是最后兜底的角色。</li>
+</ol>
+<h1 id="线上质量管控"><a href="#线上质量管控" class="headerlink" title="线上质量管控"></a>线上质量管控</h1><p>线上质量管控指的是QA和RD针对已在线上的服务设计的服务稳定性监控。除了对本产品的逻辑进行监控，这种监控还有助于发现由于依赖服务未告知即变更带来的线上问题。</p>
+<h2 id="巡检"><a href="#巡检" class="headerlink" title="巡检"></a>巡检</h2><p>API自动化、UI自动化、Diff测试都可以设置定时巡检。定时巡检的目的就是帮助及时发现依赖服务、基础服务变动导致的自身业务崩溃，避免在大量用户反馈无法使用服务以后才后知后觉，产生巨大影响。巡检的建设中，API自动化和API Diff测试应当为首要建设目标——它们建设简单，收益巨大，也可以作为QA了解本产品所有接口的最好切入点。</p>
+<p>相比侵入性较小的API自动化，性能测试一般只在用户量较低的时段、在部分机房周知各个依赖方的情况下进行。这样操作是为了避免对上下游产生不必要的压力，也为了防止压测时用户量居于高位，影响用户的体验。</p>
+<p>UI自动化有其自身特点——UI改动一般较为细致，也较为没有结构无法预测改动，因而建设优先级相对较低。</p>
+<h2 id="稳定性监控"><a href="#稳定性监控" class="headerlink" title="稳定性监控"></a>稳定性监控</h2><p>稳定性监控可以通过关注时段内日志聚类（接口调用成功率、服务报错数）、资源监控（服务器资源占用情况）等服务数据波动情况来尽早发现可能存在的问题。常用的指标有：<br>链路完成速度同比、常见错误数量波动、服务调用数跌零&#x2F;过低&#x2F;过高、业务数据（如走某个业务分支的请求数占总请求数比例）跌零&#x2F;过低&#x2F;过高、QPS跌零&#x2F;过低&#x2F;过高等</p>
+<h1 id="质量保障标准"><a href="#质量保障标准" class="headerlink" title="质量保障标准"></a>质量保障标准</h1><p>QA的另一个关键工作时制定质量保障标准。服务不可能永远不出错，出错后的应对措施必须再出错前就决定好，才不会在出错后无所适从。QA需要建设的质量保障标准一般有测试用例标准、提测准入标准、bug修复流程与时效要求、线上事故定级标准与复盘流程等</p>
+<h2 id="测试用例标准"><a href="#测试用例标准" class="headerlink" title="测试用例标准"></a>测试用例标准</h2><p>指的是QA编写测试用例的方式方法和基本结构、不同优先级的用例划分的标准。</p>
+<h2 id="提测准入标准"><a href="#提测准入标准" class="headerlink" title="提测准入标准"></a>提测准入标准</h2><p>指的是达到何种标准，RD可以交付产品到QA进行测试。一般而言要求100%自测用例通过方可提交测试。</p>
+<h2 id="bug修复流程与时效要求"><a href="#bug修复流程与时效要求" class="headerlink" title="bug修复流程与时效要求"></a>bug修复流程与时效要求</h2><p>指的是不同优先级的bug要求的平均响应时长、平均问题定位时长、平均修复时长及无法及时完成时的升级流程。</p>
+<h2 id="线上事故定级标准与复盘流程"><a href="#线上事故定级标准与复盘流程" class="headerlink" title="线上事故定级标准与复盘流程"></a>线上事故定级标准与复盘流程</h2><p><strong>事故定级标准</strong>指的是线上事故的定义方式、发生线上事故时的定级定损标准与事故响应流程、时效要求。</p>
+<p><strong>事故复盘流程</strong>指的是线上事故<strong>解决后</strong>如何进行事故根因追查、工作流程优化（以避免同类事故重复发生）</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://blog.luozhinet.com">洛栀</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://blog.luozhinet.com/posts/b1a6e353d3b0/">https://blog.luozhinet.com/posts/b1a6e353d3b0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://blog.luozhinet.com" target="_blank">洛栀の小窝</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/BS%E6%9E%B6%E6%9E%84/">BS架构</a><a class="post-meta__tags" href="/tags/%E6%B5%81%E7%A8%8B/">流程</a></div><div class="post_share"><div class="social-share" data-image="https://jsdelivr.luozhinet.com/gh/miloce/img@main/p.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://jsdelivr.luozhinet.com/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://jsdelivr.luozhinet.com/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/qqpay.png" target="_blank"><img class="post-qr-code-img" src= "/img/planeloading.jpg" data-lazy-src="/img/qqpay.png" alt="qqpay"/></a><div class="post-qr-code-desc">qqpay</div></li><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src= "/img/planeloading.jpg" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" src= "/img/planeloading.jpg" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/9792de8b38a6/"><img class="prev-cover" src= "/img/planeloading.jpg" data-lazy-src="https://jsdelivr.luozhinet.com/gh/miloce/img@main/k.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Linux 实用命令</div></div></a></div><div class="next-post pull-right"><a href="/posts/4358b00bc797/"><img class="next-cover" src= "/img/planeloading.jpg" data-lazy-src="https://jsdelivr.luozhinet.com/gh/miloce/img@main/x.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">子网掩码、前缀长度、IP地址数的换算</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%8A%80%E6%9C%AF%E8%AF%84%E5%AE%A1%E9%98%B6%E6%AE%B5"><span class="toc-number">1.</span> <span class="toc-text">产品设计与技术评审阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A7%E5%93%81%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%EF%BC%88PRD%EF%BC%89%E8%AF%84%E5%AE%A1-x2F-%E7%94%A8%E6%88%B7%E4%BD%93%E9%AA%8C%E8%AE%BE%E8%AE%A1%EF%BC%88UED%EF%BC%89%E8%AF%84%E5%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E8%AF%84%E5%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">技术评审</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AF%84%E5%AE%A1"><span class="toc-number">1.3.</span> <span class="toc-text">测试用例评审</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A0%94%E5%8F%91%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">研发阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83"><span class="toc-number">2.1.</span> <span class="toc-text">代码规范</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="toc-number">2.2.</span> <span class="toc-text">单元测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95"><span class="toc-number">2.3.</span> <span class="toc-text">集成测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%A1%E6%9F%A5"><span class="toc-number">2.4.</span> <span class="toc-text">代码审查</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%98%B6%E6%AE%B5"><span class="toc-number">3.</span> <span class="toc-text">测试阶段</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8A%E7%BA%BF%E6%B5%81%E7%A8%8B%E7%AE%A1%E6%8E%A7"><span class="toc-number">4.</span> <span class="toc-text">上线流程管控</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CICD"><span class="toc-number">4.1.</span> <span class="toc-text">CICD</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BA%BF%E4%B8%8A%E8%B4%A8%E9%87%8F%E7%AE%A1%E6%8E%A7"><span class="toc-number">5.</span> <span class="toc-text">线上质量管控</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A1%E6%A3%80"><span class="toc-number">5.1.</span> <span class="toc-text">巡检</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%B3%E5%AE%9A%E6%80%A7%E7%9B%91%E6%8E%A7"><span class="toc-number">5.2.</span> <span class="toc-text">稳定性监控</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B4%A8%E9%87%8F%E4%BF%9D%E9%9A%9C%E6%A0%87%E5%87%86"><span class="toc-number">6.</span> <span class="toc-text">质量保障标准</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E6%A0%87%E5%87%86"><span class="toc-number">6.1.</span> <span class="toc-text">测试用例标准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E6%B5%8B%E5%87%86%E5%85%A5%E6%A0%87%E5%87%86"><span class="toc-number">6.2.</span> <span class="toc-text">提测准入标准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug%E4%BF%AE%E5%A4%8D%E6%B5%81%E7%A8%8B%E4%B8%8E%E6%97%B6%E6%95%88%E8%A6%81%E6%B1%82"><span class="toc-number">6.3.</span> <span class="toc-text">bug修复流程与时效要求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E4%B8%8A%E4%BA%8B%E6%95%85%E5%AE%9A%E7%BA%A7%E6%A0%87%E5%87%86%E4%B8%8E%E5%A4%8D%E7%9B%98%E6%B5%81%E7%A8%8B"><span class="toc-number">6.4.</span> <span class="toc-text">线上事故定级标准与复盘流程</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2024 By 洛栀</div><div class="framework-info"><span>网站地图 </span><a target="_blank" rel="noopener" href="https://luozhinet.com/atom.xml">Atom</a><span class="footer-separator">|</span><span>托管 </span><a target="_blank" rel="noopener" href="https://github.com/miloce">github</a></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2023000781号-1</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">简</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="chat_btn" type="button" title="聊天"><i class="fas fa-sms"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://jsdelivr.luozhinet.com/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="https://jsdelivr.luozhinet.com/npm/instant.page@5/instantpage.min.js" type="module"></script><script src="https://jsdelivr.luozhinet.com/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://jsdelivr.luozhinet.com/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://jsdelivr.luozhinet.com/npm/pangu@4/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>(() => {
+  const $mermaidWrap = document.querySelectorAll('#article-container .mermaid-wrap')
+  if ($mermaidWrap.length) {
+    window.runMermaid = () => {
+      window.loadMermaid = true
+      const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+      Array.from($mermaidWrap).forEach((item, index) => {
+        const mermaidSrc = item.firstElementChild
+        const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+        const mermaidID = 'mermaid-' + index
+        const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+        mermaid.mermaidAPI.render(mermaidID, mermaidDefinition, (svgCode) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svgCode)
+        })
+      })
+    }
+
+    const loadMermaid = () => {
+      window.loadMermaid ? runMermaid() : getScript('https://jsdelivr.luozhinet.com/npm/mermaid/dist/mermaid.min.js').then(runMermaid)
+    }
+
+    window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+  }
+})()</script><script>(()=>{
+  const init = () => {
+    twikoo.init(Object.assign({
+      el: '#twikoo-wrap',
+      envId: 'https://twikoo.luozhinet.com',
+      region: '',
+      onCommentLoaded: function () {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      }
+    }, null))
+  }
+
+  const getCount = () => {
+    twikoo.getCommentsCount({
+      envId: 'https://twikoo.luozhinet.com',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(function (res) {
+      document.getElementById('twikoo-count').innerText = res[0].count
+    }).catch(function (err) {
+      console.error(err);
+    });
+  }
+
+  const runFn = () => {
+    init()
+    GLOBAL_CONFIG_SITE.isPost && getCount()
+  }
+
+  const loadTwikoo = () => {
+    if (typeof twikoo === 'object') {
+      setTimeout(runFn,0)
+      return
+    } 
+    getScript('https://jsdelivr.luozhinet.com/npm/twikoo@1/dist/twikoo.all.min.js').then(runFn)
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = () => {
+      loadTwikoo()
+    }
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="7418767218" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-listFolded="false" data-order="random" data-preload="none" data-autoplay="true" muted></div><canvas id="universe"></canvas><script defer src="/js/universe.js"></script><script defer src="/js/sun_moon.js"></script><script defer src="/js/beidu.js"></script><script defer src="/js/custom.js"></script><script> let backimg =["url(/img/background1.jpg)","url(/img/background2.jpg)","url(/img/background3.jpg)","url(/img/background4.jpg)","url(/img/background5.jpg)","url(/img/background6.jpg)","url(/img/background7.jpg)"];let index =Math.ceil(Math.random() * (backimg.length-1))-1;document.getElementById("web_bg").style.backgroundImage = backimg[index]</script><script src="//code.tidio.co/bjdwqvek4tmoarfd0is5fub5pyauuabz.js" async="async"></script><script>function onTidioChatApiReady() {
+  window.tidioChatApi.hide();
+  window.tidioChatApi.on("close", function() {
+    window.tidioChatApi.hide();
+  });
+}
+if (window.tidioChatApi) {
+  window.tidioChatApi.on("ready", onTidioChatApiReady);
+} else {
+  document.addEventListener("tidioChat-ready", onTidioChatApiReady);
+}
+
+var chatBtnFn = () => {
+  document.getElementById("chat_btn").addEventListener("click", function(){
+    window.tidioChatApi.show();
+    window.tidioChatApi.open();
+  });
+}
+chatBtnFn()
+</script><link rel="stylesheet" href="https://jsdelivr.luozhinet.com/npm/aplayer@1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://jsdelivr.luozhinet.com/npm/aplayer@1/dist/APlayer.min.js"></script><script src="https://jsdelivr.luozhinet.com/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script src="https://jsdelivr.luozhinet.com/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div class="app-refresh" id="app-refresh" style="position: fixed;top: -2.2rem;left: 0;right: 0;z-index: 99999;padding: 0 1rem;font-size: 15px;height: 2.2rem;transition: all 0.3s ease;"><div class="app-refresh-wrap" style=" display: flex;color: #fff;height: 100%;align-items: center;justify-content: center;"><label>✨ 小窝更新啦！ 👉</label><a href="javascript:void(0)" onclick="location.reload(true)"><span style="color: #fff;text-decoration: underline;cursor: pointer;">🍭查看新品🍬</span></a></div></div><script>if ('serviceWorker' in navigator) {
+if (navigator.serviceWorker.controller) {
+navigator.serviceWorker.addEventListener('controllerchange', function() {
+showNotification()
+})
+}
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/sw.js')
+})
+}
+function showNotification() {
+if (GLOBAL_CONFIG.Snackbar) {
+var snackbarBg =
+document.documentElement.getAttribute('data-theme') === 'light' ?
+GLOBAL_CONFIG.Snackbar.bgLight :
+GLOBAL_CONFIG.Snackbar.bgDark
+var snackbarPos = GLOBAL_CONFIG.Snackbar.position
+Snackbar.show({
+text: '✨ 小窝更新啦！ 👉',
+backgroundColor: snackbarBg,
+duration: 500000,
+pos: snackbarPos,
+actionText: '🍭查看新品🍬',
+actionTextColor: '#fff',
+onActionClick: function(e) {
+location.reload(true)
+},
+})
+} else {
+var showBg =
+document.documentElement.getAttribute('data-theme') === 'light' ?
+'#49b1f5' :
+'#1f1f1f'
+var cssText = `top: 0; background: ${showBg};`
+document.getElementById('app-refresh').style.cssText = cssText
+}
+}</script></div><!-- hexo injector body_end start --><script data-pjax>function electric_clock_injector_config(){
+                var parent_div_git = document.getElementsByClassName('sticky_layout')[0];
+                var item_html = '<div class="card-widget card-clock"><div class="card-glass"><div class="card-background"><div class="card-content"><div id="hexo_electric_clock"><img id="card-clock-loading" src= "/img/planeloading.jpg" data-lazy-src="https://jsdelivr.luozhinet.com/gh/Zfour/Butterfly-clock/clock/images/weather/loading.gif" style="height: 120px; width: 100%;" data-ll-status="loading" class="entered loading"></div></div></div></div></div>';
+                console.log('已挂载electric_clock')
+                // parent_div_git.innerHTML=item_html+parent_div_git.innerHTML // 无报错，但不影响使用(支持pjax跳转)
+                parent_div_git.insertAdjacentHTML("afterbegin",item_html) // 有报错，但不影响使用(支持pjax跳转)
+            }if( document.getElementsByClassName('sticky_layout')[0] && (location.pathname ==='all'|| 'all' ==='all')){
+
+            electric_clock_injector_config()
+        } </script><script src="https://pv.sohu.com/cityjson?ie=utf-8"></script><script data-pjax  src="https://cdn.jsdelivr.net/gh/Zfour/hexo-electric-clock@1.0.6/clock.js"></script><!-- hexo injector body_end end --><script async>window.onload=function(){var a=document.createElement('script'),b=document.getElementsByTagName('script')[0];a.type='text/javascript',a.async=!0,a.src='/sw-register.js?v='+Date.now(),b.parentNode.insertBefore(a,b)};</script></body></html>

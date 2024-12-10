@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>洛栀の小窝</title>
+  <icon>https://blog.luozhinet.com/icon.png</icon>
+  <subtitle>Blog.Luozhinet.com</subtitle>
+  <link href="https://blog.luozhinet.com/atom.xml" rel="self"/>
+  
+  <link href="https://blog.luozhinet.com/"/>
+  <updated>2023-01-13T17:52:04.000Z</updated>
+  <id>https://blog.luozhinet.com/</id>
+  
+  <author>
+    <name>洛栀</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>堵猫猫小游戏</title>
+    <link href="https://blog.luozhinet.com/posts/096db3c03b6e/"/>
+    <id>https://blog.luozhinet.com/posts/096db3c03b6e/</id>
+    <published>2023-01-13T17:02:56.000Z</published>
+    <updated>2023-01-13T17:52:04.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;捉住小猫&quot;&gt;&lt;a href=&quot;#捉住小猫&quot; class=&quot;headerlink&quot; title=&quot;捉住小猫&quot;&gt;&lt;/a&gt;捉住小猫&lt;/h1&gt;&lt;div&gt;
+&lt;iframe src=&quot;/html/catch-the-cat/index.html&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="源码分享" scheme="https://blog.luozhinet.com/categories/%E6%BA%90%E7%A0%81%E5%88%86%E4%BA%AB/"/>
+    
+    
+    <category term="堵猫猫" scheme="https://blog.luozhinet.com/tags/%E5%A0%B5%E7%8C%AB%E7%8C%AB/"/>
+    
+    <category term="小游戏" scheme="https://blog.luozhinet.com/tags/%E5%B0%8F%E6%B8%B8%E6%88%8F/"/>
+    
+    <category term="源代码" scheme="https://blog.luozhinet.com/tags/%E6%BA%90%E4%BB%A3%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>用树莓派USB摄像头做个监控</title>
+    <link href="https://blog.luozhinet.com/posts/2c9261572067/"/>
+    <id>https://blog.luozhinet.com/posts/2c9261572067/</id>
+    <published>2022-05-31T15:41:00.000Z</published>
+    <updated>2022-06-02T18:04:48.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;【前言】&quot;&gt;&lt;a href=&quot;#【前言】&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="视频" scheme="https://blog.luozhinet.com/tags/%E8%A7%86%E9%A2%91/"/>
+    
+    <category term="格式" scheme="https://blog.luozhinet.com/tags/%E6%A0%BC%E5%BC%8F/"/>
+    
+    <category term="地址" scheme="https://blog.luozhinet.com/tags/%E5%9C%B0%E5%9D%80/"/>
+    
+    <category term="图片" scheme="https://blog.luozhinet.com/tags/%E5%9B%BE%E7%89%87/"/>
+    
+    <category term="素材" scheme="https://blog.luozhinet.com/tags/%E7%B4%A0%E6%9D%90/"/>
+    
+    <category term="录制" scheme="https://blog.luozhinet.com/tags/%E5%BD%95%E5%88%B6/"/>
+    
+    <category term="文件" scheme="https://blog.luozhinet.com/tags/%E6%96%87%E4%BB%B6/"/>
+    
+    <category term="同学" scheme="https://blog.luozhinet.com/tags/%E5%90%8C%E5%AD%A6/"/>
+    
+    <category term="软件" scheme="https://blog.luozhinet.com/tags/%E8%BD%AF%E4%BB%B6/"/>
+    
+    <category term="空间" scheme="https://blog.luozhinet.com/tags/%E7%A9%BA%E9%97%B4/"/>
+    
+    <category term="代码" scheme="https://blog.luozhinet.com/tags/%E4%BB%A3%E7%A0%81/"/>
+    
+    <category term="程序" scheme="https://blog.luozhinet.com/tags/%E7%A8%8B%E5%BA%8F/"/>
+    
+    <category term="变量" scheme="https://blog.luozhinet.com/tags/%E5%8F%98%E9%87%8F/"/>
+    
+    <category term="import" scheme="https://blog.luozhinet.com/tags/import/"/>
+    
+    <category term="sudo" scheme="https://blog.luozhinet.com/tags/sudo/"/>
+    
+    <category term="命令" scheme="https://blog.luozhinet.com/tags/%E5%91%BD%E4%BB%A4/"/>
+    
+    <category term="树莓" scheme="https://blog.luozhinet.com/tags/%E6%A0%91%E8%8E%93/"/>
+    
+    <category term="usb" scheme="https://blog.luozhinet.com/tags/usb/"/>
+    
+    <category term="ffmpeg" scheme="https://blog.luozhinet.com/tags/ffmpeg/"/>
+    
+    <category term="硬盘" scheme="https://blog.luozhinet.com/tags/%E7%A1%AC%E7%9B%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>全球IP归属</title>
+    <link href="https://blog.luozhinet.com/posts/a84c927bae36/"/>
+    <id>https://blog.luozhinet.com/posts/a84c927bae36/</id>
+    <published>2022-05-22T08:27:00.000Z</published>
+    <updated>2023-01-13T16:21:50.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;很有个性的IP，很可惜，中国没有！&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;– 1.1.1.1 APNIC（澳大利亚）&lt;/p&gt;
+&lt;p&gt;– 2.2.2.2 法国电信&lt;/p&gt;
+&lt;p&gt;– 3.3.3.3 通用电器&lt;/p&gt;
+&lt;p&gt;– 4.4.4.4</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="地址" scheme="https://blog.luozhinet.com/tags/%E5%9C%B0%E5%9D%80/"/>
+    
+    <category term="分配" scheme="https://blog.luozhinet.com/tags/%E5%88%86%E9%85%8D/"/>
+    
+    <category term="ip归属" scheme="https://blog.luozhinet.com/tags/ip%E5%BD%92%E5%B1%9E/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>免费PDF转WORD网站</title>
+    <link href="https://blog.luozhinet.com/posts/c821481d77c0/"/>
+    <id>https://blog.luozhinet.com/posts/c821481d77c0/</id>
+    <published>2022-05-13T01:37:00.000Z</published>
+    <updated>2023-01-13T16:18:12.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;PDF转TXT、Word、PPT、EXCEL等格式，确实是刚需，收藏用！&lt;/p&gt;
+&lt;p&gt;以下网站，均不需要下载软件，干净且良心！爆赞！！！&lt;/p&gt;
+&lt;h2 id=&quot;1、ALL-to-ALL-在线格式转换&quot;&gt;&lt;a href=&quot;#1、ALL-to-ALL-在线格式转换&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="网站" scheme="https://blog.luozhinet.com/tags/%E7%BD%91%E7%AB%99/"/>
+    
+    <category term="转换" scheme="https://blog.luozhinet.com/tags/%E8%BD%AC%E6%8D%A2/"/>
+    
+    <category term="pdf" scheme="https://blog.luozhinet.com/tags/pdf/"/>
+    
+    <category term="免费" scheme="https://blog.luozhinet.com/tags/%E5%85%8D%E8%B4%B9/"/>
+    
+    <category term="格式" scheme="https://blog.luozhinet.com/tags/%E6%A0%BC%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Google镜像站</title>
+    <link href="https://blog.luozhinet.com/posts/6631458408e8/"/>
+    <id>https://blog.luozhinet.com/posts/6631458408e8/</id>
+    <published>2022-05-13T01:32:00.000Z</published>
+    <updated>2023-01-13T15:46:42.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Google确实是好的搜索引擎，Google能为我服务就好，其他不关心，关键是它离国人挺远不是吗？相比国内某度，还是不作比较吧。。。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;送几个Google镜像（仅供学习）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="google" scheme="https://blog.luozhinet.com/tags/google/"/>
+    
+    <category term="镜像" scheme="https://blog.luozhinet.com/tags/%E9%95%9C%E5%83%8F/"/>
+    
+    <category term="搜索引擎" scheme="https://blog.luozhinet.com/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>绿色纯净下载网站-软猫下载</title>
+    <link href="https://blog.luozhinet.com/posts/1ec0df688f03/"/>
+    <id>https://blog.luozhinet.com/posts/1ec0df688f03/</id>
+    <published>2022-05-13T01:32:00.000Z</published>
+    <updated>2023-01-13T16:16:10.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;软猫下载-自称纯净无插件的软件 APP 下载平台！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="网站" scheme="https://blog.luozhinet.com/tags/%E7%BD%91%E7%AB%99/"/>
+    
+    <category term="软件" scheme="https://blog.luozhinet.com/tags/%E8%BD%AF%E4%BB%B6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CrxDL-Chrome扩展离线下载</title>
+    <link href="https://blog.luozhinet.com/posts/f30c3df9c2fc/"/>
+    <id>https://blog.luozhinet.com/posts/f30c3df9c2fc/</id>
+    <published>2022-05-13T01:30:00.000Z</published>
+    <updated>2023-01-13T15:03:42.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;大家时间宝贵，不需要关注什么公众号才能下载扩展之类的，对于此我也是比较痛恨的！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="Chrome扩展" scheme="https://blog.luozhinet.com/tags/Chrome%E6%89%A9%E5%B1%95/"/>
+    
+    <category term="插件" scheme="https://blog.luozhinet.com/tags/%E6%8F%92%E4%BB%B6/"/>
+    
+    <category term="油猴插件" scheme="https://blog.luozhinet.com/tags/%E6%B2%B9%E7%8C%B4%E6%8F%92%E4%BB%B6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>UP云搜-海量资源任你搜</title>
+    <link href="https://blog.luozhinet.com/posts/6f929ba7ef0a/"/>
+    <id>https://blog.luozhinet.com/posts/6f929ba7ef0a/</id>
+    <published>2022-05-13T01:30:00.000Z</published>
+    <updated>2023-01-13T16:13:16.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;UP云搜-原阿里云搜，资源全，热度高，下载快，更新及时！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="搜索" scheme="https://blog.luozhinet.com/tags/%E6%90%9C%E7%B4%A2/"/>
+    
+    <category term="视频" scheme="https://blog.luozhinet.com/tags/%E8%A7%86%E9%A2%91/"/>
+    
+    <category term="资源" scheme="https://blog.luozhinet.com/tags/%E8%B5%84%E6%BA%90/"/>
+    
+    <category term="网盘" scheme="https://blog.luozhinet.com/tags/%E7%BD%91%E7%9B%98/"/>
+    
+    <category term="云搜" scheme="https://blog.luozhinet.com/tags/%E4%BA%91%E6%90%9C/"/>
+    
+    <category term="云盘" scheme="https://blog.luozhinet.com/tags/%E4%BA%91%E7%9B%98/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>免费PDF、视频、图片转换-在线工具TinyWow</title>
+    <link href="https://blog.luozhinet.com/posts/ad5499059bd8/"/>
+    <id>https://blog.luozhinet.com/posts/ad5499059bd8/</id>
+    <published>2022-05-13T01:30:00.000Z</published>
+    <updated>2023-01-13T16:16:54.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;在这里可以任意转换PDF文件，视频剪辑、压缩、转化GIF，图片转换、二维码生成等诸多功能！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot; title=&quot;介绍：&quot;&gt;&lt;/a&gt;介绍：&lt;/h2&gt;&lt;p&gt;TinyWow</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="网站" scheme="https://blog.luozhinet.com/tags/%E7%BD%91%E7%AB%99/"/>
+    
+    <category term="转换" scheme="https://blog.luozhinet.com/tags/%E8%BD%AC%E6%8D%A2/"/>
+    
+    <category term="pdf" scheme="https://blog.luozhinet.com/tags/pdf/"/>
+    
+    <category term="tinywow" scheme="https://blog.luozhinet.com/tags/tinywow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>轻松得使你的收藏夹变成强大的新标签页 -小舒同学</title>
+    <link href="https://blog.luozhinet.com/posts/13b70ad2982c/"/>
+    <id>https://blog.luozhinet.com/posts/13b70ad2982c/</id>
+    <published>2022-05-13T01:30:00.000Z</published>
+    <updated>2023-01-13T16:32:34.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;可能很好奇，小舒同学是啥？小爱同学？NO！小舒同学是省事、高效的新一代新建标签页浏览器扩展，让你的主页更加简单，更加方便！&lt;/p&gt;
+&lt;p&gt;简单并不意味着欠缺或低劣，也不意味着不注重装饰或者完全赤裸裸。而是说装饰应该紧密贴近设计本身，任何无关的要素都应该予以剔除。&lt;/p&gt;
+&lt;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="小舒同学" scheme="https://blog.luozhinet.com/tags/%E5%B0%8F%E8%88%92%E5%90%8C%E5%AD%A6/"/>
+    
+    <category term="收藏夹" scheme="https://blog.luozhinet.com/tags/%E6%94%B6%E8%97%8F%E5%A4%B9/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>几秒钟删除照片里你不需要的元素-Magiceraser</title>
+    <link href="https://blog.luozhinet.com/posts/4b6cb4514456/"/>
+    <id>https://blog.luozhinet.com/posts/4b6cb4514456/</id>
+    <published>2022-05-13T01:29:00.000Z</published>
+    <updated>2023-01-13T16:13:50.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;日常处理图片的时候，可能照片的某个地方不需要，要删掉某个元素，很多朋友对于PS不是很精通，但现在有一个很好的图片处理工具，供大家使用！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="网站" scheme="https://blog.luozhinet.com/tags/%E7%BD%91%E7%AB%99/"/>
+    
+    <category term="删除图片" scheme="https://blog.luozhinet.com/tags/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87/"/>
+    
+    <category term="Magiceraser" scheme="https://blog.luozhinet.com/tags/Magiceraser/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>绕过Google play下载APK的一种方式</title>
+    <link href="https://blog.luozhinet.com/posts/fb79b38d6277/"/>
+    <id>https://blog.luozhinet.com/posts/fb79b38d6277/</id>
+    <published>2022-05-13T01:29:00.000Z</published>
+    <updated>2023-01-13T16:22:56.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;Google 太强势了，很多手机也安装不了GMS，又想用play商店里面的软件，该怎么办呢？&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="google" scheme="https://blog.luozhinet.com/tags/google/"/>
+    
+    <category term="下载" scheme="https://blog.luozhinet.com/tags/%E4%B8%8B%E8%BD%BD/"/>
+    
+    <category term="商店" scheme="https://blog.luozhinet.com/tags/%E5%95%86%E5%BA%97/"/>
+    
+    <category term="play" scheme="https://blog.luozhinet.com/tags/play/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>腾讯智影AI剪辑-在线视频剪辑</title>
+    <link href="https://blog.luozhinet.com/posts/94456e62e22c/"/>
+    <id>https://blog.luozhinet.com/posts/94456e62e22c/</id>
+    <published>2022-05-13T01:29:00.000Z</published>
+    <updated>2022-05-18T15:05:28.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;智影剪辑是腾讯出品在线视频剪辑工作，能够快速帮您制作短视频，提高剪辑效率！&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="视频" scheme="https://blog.luozhinet.com/tags/%E8%A7%86%E9%A2%91/"/>
+    
+    <category term="素材" scheme="https://blog.luozhinet.com/tags/%E7%B4%A0%E6%9D%90/"/>
+    
+    <category term="剪辑" scheme="https://blog.luozhinet.com/tags/%E5%89%AA%E8%BE%91/"/>
+    
+    <category term="智影" scheme="https://blog.luozhinet.com/tags/%E6%99%BA%E5%BD%B1/"/>
+    
+    <category term="生成" scheme="https://blog.luozhinet.com/tags/%E7%94%9F%E6%88%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>清图-模糊图片变清晰</title>
+    <link href="https://blog.luozhinet.com/posts/1235535247cb/"/>
+    <id>https://blog.luozhinet.com/posts/1235535247cb/</id>
+    <published>2022-05-13T01:27:00.000Z</published>
+    <updated>2023-01-13T16:20:50.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;清图是一款基于深度学习技术将模糊图片变清晰的在线工具。&lt;/p&gt;
+&lt;h2 id=&quot;介绍：&quot;&gt;&lt;a href=&quot;#介绍：&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="网站推荐" scheme="https://blog.luozhinet.com/categories/%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="图片" scheme="https://blog.luozhinet.com/tags/%E5%9B%BE%E7%89%87/"/>
+    
+    <category term="清图" scheme="https://blog.luozhinet.com/tags/%E6%B8%85%E5%9B%BE/"/>
+    
+    <category term="无损" scheme="https://blog.luozhinet.com/tags/%E6%97%A0%E6%8D%9F/"/>
+    
+    <category term="处理" scheme="https://blog.luozhinet.com/tags/%E5%A4%84%E7%90%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>怎么用python做一个解压缩小工具，以后再也不用下载各种格式的解压缩软件了...</title>
+    <link href="https://blog.luozhinet.com/posts/4acff0774207/"/>
+    <id>https://blog.luozhinet.com/posts/4acff0774207/</id>
+    <published>2022-05-12T12:46:00.000Z</published>
+    <updated>2022-05-18T15:05:28.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;经常由于各种压缩格式的不一样用到文件的解压缩时就需要下载不同的解压缩工具去处理不同的文件，以至于桌面上的压缩工具就有三四种，于是使用python做了一个包含各种常见格式的文件解压缩的小工具。&lt;/p&gt;
+&lt;p&gt;&lt;img</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="函数" scheme="https://blog.luozhinet.com/tags/%E5%87%BD%E6%95%B0/"/>
+    
+    <category term="操作" scheme="https://blog.luozhinet.com/tags/%E6%93%8D%E4%BD%9C/"/>
+    
+    <category term="文件" scheme="https://blog.luozhinet.com/tags/%E6%96%87%E4%BB%B6/"/>
+    
+    <category term="import" scheme="https://blog.luozhinet.com/tags/import/"/>
+    
+    <category term="压缩" scheme="https://blog.luozhinet.com/tags/%E5%8E%8B%E7%BC%A9/"/>
+    
+    <category term="target_" scheme="https://blog.luozhinet.com/tags/target/"/>
+    
+    <category term="source_" scheme="https://blog.luozhinet.com/tags/source/"/>
+    
+    <category term="zip" scheme="https://blog.luozhinet.com/tags/zip/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python发送邮件</title>
+    <link href="https://blog.luozhinet.com/posts/76dd1b500ee9/"/>
+    <id>https://blog.luozhinet.com/posts/76dd1b500ee9/</id>
+    <published>2022-05-12T09:51:00.000Z</published>
+    <updated>2023-01-13T15:59:16.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Python发送邮件&quot;&gt;&lt;a href=&quot;#Python发送邮件&quot; class=&quot;headerlink&quot; title=&quot;Python发送邮件&quot;&gt;&lt;/a&gt;Python发送邮件&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="python" scheme="https://blog.luozhinet.com/tags/python/"/>
+    
+    <category term="邮箱" scheme="https://blog.luozhinet.com/tags/%E9%82%AE%E7%AE%B1/"/>
+    
+    <category term="函数" scheme="https://blog.luozhinet.com/tags/%E5%87%BD%E6%95%B0/"/>
+    
+    <category term="smtp" scheme="https://blog.luozhinet.com/tags/smtp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux 实用命令</title>
+    <link href="https://blog.luozhinet.com/posts/9792de8b38a6/"/>
+    <id>https://blog.luozhinet.com/posts/9792de8b38a6/</id>
+    <published>2022-05-12T09:03:00.000Z</published>
+    <updated>2023-01-13T15:55:18.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;实用命令：&quot;&gt;&lt;a href=&quot;#实用命令：&quot; class=&quot;headerlink&quot; title=&quot;实用命令：&quot;&gt;&lt;/a&gt;实用命令：&lt;/h2&gt;&lt;h3 id=&quot;1、查看端口占用情况&quot;&gt;&lt;a href=&quot;#1、查看端口占用情况&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="linux" scheme="https://blog.luozhinet.com/tags/linux/"/>
+    
+    <category term="实用命令" scheme="https://blog.luozhinet.com/tags/%E5%AE%9E%E7%94%A8%E5%91%BD%E4%BB%A4/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>BS架构通用质量保障工作流程</title>
+    <link href="https://blog.luozhinet.com/posts/b1a6e353d3b0/"/>
+    <id>https://blog.luozhinet.com/posts/b1a6e353d3b0/</id>
+    <published>2022-05-12T08:32:00.000Z</published>
+    <updated>2023-01-13T14:56:30.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;质量保障是做好产品十分重要的一步，但是为了快速起项目形成业务，很多项目在设计之初全由前后端开发人员自测，稳定上线后才补上质量保障侧的内容。本文旨在梳理一套BS架构产品的通用质量保障模型。&lt;/p&gt;
+&lt;h1 id=&quot;产品设计与技术评审阶段&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="BS架构" scheme="https://blog.luozhinet.com/tags/BS%E6%9E%B6%E6%9E%84/"/>
+    
+    <category term="流程" scheme="https://blog.luozhinet.com/tags/%E6%B5%81%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>子网掩码、前缀长度、IP地址数的换算</title>
+    <link href="https://blog.luozhinet.com/posts/4358b00bc797/"/>
+    <id>https://blog.luozhinet.com/posts/4358b00bc797/</id>
+    <published>2022-05-12T06:38:00.000Z</published>
+    <updated>2022-05-18T15:05:28.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;子网掩码、前缀长度、IP地址数的换算&quot;&gt;&lt;a href=&quot;#子网掩码、前缀长度、IP地址数的换算&quot; class=&quot;headerlink&quot; title=&quot;子网掩码、前缀长度、IP地址数的换算&quot;&gt;&lt;/a&gt;子网掩码、前缀长度、IP地址数的换算&lt;/h1&gt;&lt;h2</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="地址" scheme="https://blog.luozhinet.com/tags/%E5%9C%B0%E5%9D%80/"/>
+    
+    <category term="子网掩码" scheme="https://blog.luozhinet.com/tags/%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81/"/>
+    
+    <category term="长度" scheme="https://blog.luozhinet.com/tags/%E9%95%BF%E5%BA%A6/"/>
+    
+    <category term="255.255.255.0" scheme="https://blog.luozhinet.com/tags/255-255-255-0/"/>
+    
+    <category term="个数" scheme="https://blog.luozhinet.com/tags/%E4%B8%AA%E6%95%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>5分钟站点生成神器——Docusaurus</title>
+    <link href="https://blog.luozhinet.com/posts/304408dfc52f/"/>
+    <id>https://blog.luozhinet.com/posts/304408dfc52f/</id>
+    <published>2022-05-11T09:43:00.000Z</published>
+    <updated>2023-01-13T14:55:08.000Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;为什么要使用Docusaurus&quot;&gt;&lt;a href=&quot;#为什么要使用Docusaurus&quot; class=&quot;headerlink&quot; title=&quot;为什么要使用Docusaurus&quot;&gt;&lt;/a&gt;为什么要使用Docusaurus&lt;/h2&gt;&lt;p&gt;Docusaurus 是</summary>
+        
+      
+    
+    
+    
+    <category term="技术教程" scheme="https://blog.luozhinet.com/categories/%E6%8A%80%E6%9C%AF%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="Docusaurus" scheme="https://blog.luozhinet.com/tags/Docusaurus/"/>
+    
+    <category term="站点生成神器" scheme="https://blog.luozhinet.com/tags/%E7%AB%99%E7%82%B9%E7%94%9F%E6%88%90%E7%A5%9E%E5%99%A8/"/>
+    
+  </entry>
+  
+</feed>

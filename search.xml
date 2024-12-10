@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>堵猫猫小游戏</title>
+      <link href="/posts/096db3c03b6e/"/>
+      <url>/posts/096db3c03b6e/</url>
+      
+        <content type="html"><![CDATA[<h1 id="捉住小猫"><a href="#捉住小猫" class="headerlink" title="捉住小猫"></a>捉住小猫</h1><div><iframe src="/html/catch-the-cat/index.html" scrolling="no" border="0" frameborder="no" framespacing="0" high_quality="1" danmaku="1" allowfullscreen></iframe></div><h2 id="游戏玩法"><a href="#游戏玩法" class="headerlink" title="游戏玩法"></a>游戏玩法</h2><ul><li>点击小圆点，围住小猫。</li><li>你点击一次，小猫走一次。</li><li>直到你把小猫围住（赢），或者小猫走到边界并逃跑（输）。</li></ul><h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><p><a href="https://luozhinet.lanzouw.com/ioFiU0ky5huh">游戏源代码点击下载</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 源码分享 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 堵猫猫 </tag>
+            
+            <tag> 小游戏 </tag>
+            
+            <tag> 源代码 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>用树莓派USB摄像头做个监控</title>
+      <link href="/posts/2c9261572067/"/>
+      <url>/posts/2c9261572067/</url>
+      
+        <content type="html"><![CDATA[<h2 id="【前言】"><a href="#【前言】" class="headerlink" title="【前言】"></a>【前言】</h2><blockquote><p>看着阴暗的角落里吃灰噎到嗓子眼的树莓派，一起陪伴的时光历历在目，往事逐渐涌上心头，每每触及此处，内心总会升腾起阵阵怜悯之情…</p></blockquote><p>我这有两个设备，一个是积灰已久的树莓派，另一个是积灰已久的USB摄像头。</p><p>我们今天用这两个设备做一个拍摄监控方案（非视频录制），然后将拍摄好的图片合成视频进行观看。</p><p>主要用到的技术有：树莓派&#x2F;linux操作，crontab，python，ffmpeg。</p><h2 id="【系列目录】"><a href="#【系列目录】" class="headerlink" title="【系列目录】"></a>【系列目录】</h2><ol><li>树莓派驱动usb摄像头（非官方摄像头模块）</li><li>树莓派加载外接USB硬盘</li><li>树莓派拍摄获取素材程序</li><li>树莓派定时任务编写</li><li>将素材图片合成视频</li></ol><h2 id="【实现过程】"><a href="#【实现过程】" class="headerlink" title="【实现过程】"></a>【实现过程】</h2><h4 id="树莓派驱动usb摄像头（非官方摄像头模块）"><a href="#树莓派驱动usb摄像头（非官方摄像头模块）" class="headerlink" title="树莓派驱动usb摄像头（非官方摄像头模块）"></a>树莓派驱动usb摄像头（非官方摄像头模块）</h4><p>首先我们要保证树莓派可以识别usb摄像头设备，使用命令：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsusb</span><br></pre></td></tr></table></figure><p><img src="https://static.luozhinet.com/76/4cb337cb9adfa8619785660f5d34f3" alt="image"></p><p>可以看到usb设备列表第一个即 <em>海康威视1080p</em> usb摄像头，说明我们的摄像头设备被正确识别，如果无法识别，则要排除设备故障或想办法安装设备驱动程序。</p><p>我们使用fswebcam应用来驱动usb摄像头模块</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install fswebcam</span><br><span class="line">sudo apt-get install mplayer</span><br></pre></td></tr></table></figure><p>简单输入拍照命令测试下</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fswebcam -r 1920*1080 --delay 3 --skip 10 1.jpg</span><br></pre></td></tr></table></figure><p><img src="https://static.luozhinet.com/68/d30bcb84ecd167082288728939949c" alt="image"></p><p><img src="https://static.luozhinet.com/06/c31781a6cbc5d1d8b0454655251d21" alt="image"></p><p>我们把树莓派上的 1.jpg 下载下来进行查看，成功拍摄到了画面！</p><p><img src="https://static.luozhinet.com/5e/8b6bcf5635c27baafcab938422f312" alt="image"></p><p>我们在使用fswebcam时，增加了几个参数，下面介绍这几个参数的作用：</p><table><thead><tr><th>参数</th><th>作用</th></tr></thead><tbody><tr><td>-r 1920*1080</td><td>拍摄图片分辨率</td></tr><tr><td>--delay 3</td><td>延时3s后拍摄（给摄像头自动对焦的时间，否则会模糊，这个经常拍照的可以理解吧）</td></tr><tr><td>--skip 10</td><td>作用同上，拍摄时其实会拍摄好多帧，我们跳过前10帧以保证清晰度</td></tr></tbody></table><h4 id="树莓派加载外接USB硬盘"><a href="#树莓派加载外接USB硬盘" class="headerlink" title="树莓派加载外接USB硬盘"></a>树莓派加载外接USB硬盘</h4><p>我们计划编写一个程序来长时间捕捉摄像头画面，那么就需要一个比较大的存储空间来存放我们拍摄的图片，我们从小角落找到一个同样“积灰已久”的固态硬盘。</p><p>windows下使用过的硬盘，推荐格式化成<em>FAT32</em>格式，该格式是兼容Linux系统文件格式的，NTFS格式兼容性不是特别好，可能读写会出问题。</p><blockquote><p>当然直接用linux fdisk命令格式化成 ext2&#x2F;3&#x2F;4 也是可以的，但是后续在windows环境下读写又是新问题，如果硬盘不是准备永久挂载在linux系统下使用，还是建议用<em>FAT32</em>格式使用。</p></blockquote><blockquote><p>windows10&#x2F;11 下已经不提供格式成 <em>FAT32</em> 的入口，我们可以下载奥梅分区助手快速格式化成想要的格式。</p></blockquote><p>使用命令查看固态硬盘是否被识别</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsusb</span><br></pre></td></tr></table></figure><p><img src="https://static.luozhinet.com/76/4cb337cb9adfa8619785660f5d34f3" alt="image"></p><p>可以看到，第二个usb设备便是我们的usb固态硬盘设备了（M.2硬盘放到了USB硬盘盒进行外接）</p><p>使用 fdisk 命令查看硬盘属性</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk -l</span><br></pre></td></tr></table></figure><p><img src="https://static.luozhinet.com/ca/4ead62f47bef4459e3d406d8869cab" alt="image"></p><p>使用 mount 挂载硬盘设备，将磁盘挂载到 &#x2F;mnt&#x2F;sda1 路径下</p><p>虽然网上有很多教程说配置一个配置文件（具体配置我就不说了），然后让设备开机自动挂载，但我个人极不推荐，修改配置文件开机自动挂载虽然貌似一劳永逸，但在硬盘设备发生变更时，大概率因为忘记同步修改配置文件，会造成无法启动系统的严重故障，折腾不说还可能需要重装系统解决…其实启动不频繁情况下，手动装载也不费事。</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount /dev/sda3 /mnt/sda1</span><br></pre></td></tr></table></figure><p>然后使用 df 命令查看存储占用详情</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df</span><br></pre></td></tr></table></figure><p><img src="https://static.luozhinet.com/3b/84468b1d130947192a6af2f54e5eec" alt="image"></p><p>可以看到硬盘成功挂载。</p><h4 id="树莓派拍摄获取素材程序"><a href="#树莓派拍摄获取素材程序" class="headerlink" title="树莓派拍摄获取素材程序"></a>树莓派拍摄获取素材程序</h4><p>我们编写一个短小的python脚本来实现以下几点小功能：</p><ul><li>据时间归档目录</li><li>调用api执行拍照，并按时间戳命名</li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    path = <span class="string">&#x27;/mnt/sda1&#x27;</span></span><br><span class="line">    <span class="comment"># path = &#x27;E:\code\Project.Python\CameraShoot&#x27;</span></span><br><span class="line">    folder = <span class="string">f&#x27;<span class="subst">&#123;path&#125;</span>/<span class="subst">&#123;time.strftime(<span class="string">&quot;%Y%m%d&quot;</span>)&#125;</span>&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(folder):</span><br><span class="line">        os.mkdir(folder)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 拍照</span></span><br><span class="line">    os.system(</span><br><span class="line">        <span class="string">f&#x27;fswebcam -r 1920*1080 --delay 3 --skip 10 <span class="subst">&#123;folder&#125;</span>/<span class="subst">&#123;time.strftime(<span class="string">&quot;%Y%m%d%H%M%S&quot;</span>)&#125;</span>.jpg&#x27;</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure><h4 id="树莓派定时任务编写"><a href="#树莓派定时任务编写" class="headerlink" title="树莓派定时任务编写"></a>树莓派定时任务编写</h4><p>我们使用 linux 环境下的 crontab 编写定时任务，来定时执行拍照任务（初步定每分钟拍一张）</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">crontab -e</span><br><span class="line">* * * * * python /7tiny/camera_shoot.py</span><br></pre></td></tr></table></figure><p>采用定时任务，每分钟自动调度执行我们写好的python脚本，来进行拍照任务的执行</p><p>等待一段时间后，便可拿到拍摄素材…</p><p><img src="https://static.luozhinet.com/bf/98d9ef3a8b54c1fc38bd89e5893bf7" alt="image"></p><p><img src="https://static.luozhinet.com/3e/b29151741bc38c17762c7ac9681d08" alt="image"></p><h4 id="将素材图片合成视频"><a href="#将素材图片合成视频" class="headerlink" title="将素材图片合成视频"></a>将素材图片合成视频</h4><p>我们先简单从树莓派上下载下来拍摄好的图片，在 windows 上简单合成一个视频，完成我们的任务目标，后期可以根据需要在树莓派上自动合成。</p><p>我们用 ffmpeg 软件将图片合成为视频。</p><p>首先下载 ffmpeg 软件的 exe 版本（windows），linux上可直接下载linux版。</p><p>然后将解压后 ffmpeg 的 exe 目录添加到环境变量，方便我们执行命令。</p><p>将树莓派上的图片下载下来。</p><p><img src="https://static.luozhinet.com/0e/2087bb6f73079f8085b5de7fc1cc66" alt="image"></p><p>下载下来的图片我们是默认使用时间戳来命名图片的，因为ffmpeg只能从 0 - n 顺序识别图片，无法识别时间戳这种命名，因此，我这里自己编写了一个工具将图片名称替换成了 0 - n.jpg。</p><p>有需要的同学可以在文末获取到工具源码及下载地址。</p><p>重命名好后，我们执行命令压缩图片为 mp4 文件。</p><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -r <span class="number">10</span> -f image2 -i %d.jpg -vcodec libx264 -pix_fmt yuv420p out.mp4</span><br></pre></td></tr></table></figure><p>同样我们介绍下使用的几个参数：</p><table><thead><tr><th>参数</th><th>作用</th></tr></thead><tbody><tr><td>-r 10</td><td>视频为每秒10帧，可以根据需要调整，10帧就是10张图片</td></tr><tr><td>%d</td><td>从0开始在当前目录递增寻找图片</td></tr><tr><td>-vcodec libx264（windows兼容）</td><td></td></tr><tr><td>-vcodec libx265（体积更小，windows默认不支持）</td><td>视频压缩参数</td></tr><tr><td>-pix_fmt yuv420p</td><td>视频编码格式（windows下播放兼容）</td></tr></tbody></table><p>执行后，我们便可查看到图片被拼接成为 mp4 格式的视频。</p><p><img src="https://static.luozhinet.com/e2/635305b8ad961ffad26395b53a4fc8" alt="image"></p><p><img src="https://static.luozhinet.com/c6/57431b6621e6f56c8c111dcae343ea" alt="image"></p><h2 id="【总结】"><a href="#【总结】" class="headerlink" title="【总结】"></a>【总结】</h2><p>本文通过短小的代码片段初步使用树莓派+usb摄像头进行环境捕捉，在此基础上，可以进行很多额外的场景扩展及使用优化。</p><h2 id="【源码地址】"><a href="#【源码地址】" class="headerlink" title="【源码地址】"></a>【源码地址】</h2><p>重命名工具源码及编译后绿色程序：<br><a href="https://github.com/sevenTiny/SevenTinyToolBox/blob/main/tools/SevenTinyToolBox.RenameWithNumber.exe">https://github.com/sevenTiny/SevenTinyToolBox/blob/main/tools/SevenTinyToolBox.RenameWithNumber.exe</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 视频 </tag>
+            
+            <tag> 格式 </tag>
+            
+            <tag> 地址 </tag>
+            
+            <tag> 图片 </tag>
+            
+            <tag> 素材 </tag>
+            
+            <tag> 录制 </tag>
+            
+            <tag> 文件 </tag>
+            
+            <tag> 同学 </tag>
+            
+            <tag> 软件 </tag>
+            
+            <tag> 空间 </tag>
+            
+            <tag> 代码 </tag>
+            
+            <tag> 程序 </tag>
+            
+            <tag> 变量 </tag>
+            
+            <tag> import </tag>
+            
+            <tag> sudo </tag>
+            
+            <tag> 命令 </tag>
+            
+            <tag> 树莓 </tag>
+            
+            <tag> usb </tag>
+            
+            <tag> ffmpeg </tag>
+            
+            <tag> 硬盘 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>全球IP归属</title>
+      <link href="/posts/a84c927bae36/"/>
+      <url>/posts/a84c927bae36/</url>
+      
+        <content type="html"><![CDATA[<p>很有个性的IP，很可惜，中国没有！</p><blockquote><p>– 1.1.1.1 APNIC（澳大利亚）</p><p>– 2.2.2.2 法国电信</p><p>– 3.3.3.3 通用电器</p><p>– 4.4.4.4 Level3(美国服务商)</p><p>– 5.5.5.5 德国电信</p><p>– 6.6.6.6 美国陆军</p><p>– 7.7.7.7 美国国防部</p><p>– 8.8.8.8 谷歌</p><p>– 9.9.9.9 IBM</p></blockquote><p>普及点知识：</p><p><img src="https://static.luozhinet.com/be/3da5c2a82a8f8f57a0708186fa3b47"></p><h3 id="你看看这些公司数据，地址块啊！"><a href="#你看看这些公司数据，地址块啊！" class="headerlink" title="你看看这些公司数据，地址块啊！"></a>你看看这些公司数据，地址块啊！</h3><h3 id=""><a href="#" class="headerlink" title=""></a><img src="https://static.luozhinet.com/52/0011821e84b0ce4396f95da415b523"></h3><p>美国特殊数据</p><p><img src="https://static.luozhinet.com/9a/3789ef87f414ca840412f306203021"></p><p>列举这些，每个公司或者机构都分配了巨量的IP，数量为16777216（一千六百多万个IP）</p><p><em>中国这些地址块都没分到，只有一些零碎的。但数量远不如美国啊，人均更不用说了！</em></p><h3 id="看看这些部分各国的IP数据！"><a href="#看看这些部分各国的IP数据！" class="headerlink" title="看看这些部分各国的IP数据！"></a>看看这些部分各国的IP数据！</h3><p><img src="https://static.luozhinet.com/5a/2d4276c5bc138cb4711675abb2e272"></p><p>中国IP分配：<img src="https://static.luozhinet.com/e0/2e1f641452d03403c154b4972793fa"></p><p>知道现在装宽带没什么没公网IP了吧，早就用完了，现在运营商NAT分配，全面进入内网了，你懂得！哈哈哈！！！</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 地址 </tag>
+            
+            <tag> 分配 </tag>
+            
+            <tag> ip归属 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>免费PDF转WORD网站</title>
+      <link href="/posts/c821481d77c0/"/>
+      <url>/posts/c821481d77c0/</url>
+      
+        <content type="html"><![CDATA[<p>PDF转TXT、Word、PPT、EXCEL等格式，确实是刚需，收藏用！</p><p>以下网站，均不需要下载软件，干净且良心！爆赞！！！</p><h2 id="1、ALL-to-ALL-在线格式转换"><a href="#1、ALL-to-ALL-在线格式转换" class="headerlink" title="1、ALL to ALL 在线格式转换"></a>1、ALL to ALL 在线格式转换</h2><p><img src="https://static.luozhinet.com/2e/d8735354495477bafea0b1202e2ae2"></p><p>支持格式众多，音频、视频、文档等，而且100%免费，唯一缺点，文档转换大小限制10M。</p><h2 id="2、easy-PDF"><a href="#2、easy-PDF" class="headerlink" title="2、easy PDF"></a>2、easy PDF</h2><p><img src="https://static.luozhinet.com/1e/c5076a3a1bc48ad7599beba9dc9140"></p><p>从PDF到Easy，基本涵盖了日常工作的格式，而且网站承诺：免费、线上、匿名！</p><h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p><em>All to</em> <em>A**ll</em> ：<em><a href="https://www.alltoall.net/">https://www.alltoall.net/</a></em></p><p><em>Easy PDF</em>：<em><a href="https://easypdf.com/cn">https://easypdf.com/cn</a></em></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 网站 </tag>
+            
+            <tag> 转换 </tag>
+            
+            <tag> pdf </tag>
+            
+            <tag> 免费 </tag>
+            
+            <tag> 格式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Google镜像站</title>
+      <link href="/posts/6631458408e8/"/>
+      <url>/posts/6631458408e8/</url>
+      
+        <content type="html"><![CDATA[<p>Google确实是好的搜索引擎，Google能为我服务就好，其他不关心，关键是它离国人挺远不是吗？相比国内某度，还是不作比较吧。。。</p><hr><p>送几个Google镜像（仅供学习）：</p><ul><li><a href="https://siguso.com/google/">https://siguso.com/google/</a> （Google网页和学术,墙裂推荐）</li><li><a href="https://jia110.github.io/">https://jia110.github.io/</a>   （Google网页和学术,墙裂推荐）</li><li><a href="http://www.vovososo.com/">http://www.vovososo.com</a> (Google学术)</li><li><a href="https://ac.scmor.com/">https://ac.scmor.com/</a>  （Google学术）</li><li><a href="http://scholar.hedasudi.com/">http://scholar.hedasudi.com/</a>  （Google学术）</li><li><a href="https://gg.i-research.edu.eu.org/%EF%BC%88Google%E5%AD%A6%E6%9C%AF%EF%BC%89">https://gg.i-research.edu.eu.org/（Google学术）</a></li><li><a href="https://go.judd.workers.dev/">https://go.judd.workers.dev/</a>  （Google学术）</li><li><a href="http://g.histsci.org/">http://g.histsci.org/</a> （Google学术）</li><li><a href="https://google.zenith.gq/">https://google.zenith.gq/</a>  （Google网页）</li><li><a href="https://go.judd.workers.dev/%EF%BC%88Google%E7%BD%91%E9%A1%B5%EF%BC%89">https://go.judd.workers.dev/（Google网页）</a></li></ul><p>感觉够用了，我也没收集多少，凑合用吧！</p><p>2022.01.09更新</p><hr><p>注：Google镜像站不要搜索敏感词，不可违反中国法律！</p><hr><p>授人以鱼不如授人以渔，refence：</p><p><a href="https://github.com/aploium/zmirror%EF%BC%88python%E5%86%99%E7%9A%84%EF%BC%89">https://github.com/aploium/zmirror（python写的）</a></p><p><a href="https://github.com/cuber/ngx/_http/_google/_filter/_module/blob/master/README.zh-CN.md%EF%BC%88Nginx%E6%A8%A1%E5%9D%97%EF%BC%89">https://github.com/cuber/ngx\_http\_google\_filter\_module/blob/master/README.zh-CN.md（Nginx模块）</a></p><p><a href="https://www.moerats.com/archives/445/%EF%BC%88LNMP%EF%BC%89">https://www.moerats.com/archives/445/（LNMP）</a></p><p><a href="https://github.com/searx/searx">https://github.com/searx/searx</a></p><p><a href="https://github.com/EtherDream/jsproxy">https://github.com/EtherDream/jsproxy</a></p><p>Google确实是好的搜索引擎，Google能为我服务就好，其他不关心，关键是它离国人挺远不是吗？相比国内某度，还是不作比较吧。。。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> google </tag>
+            
+            <tag> 镜像 </tag>
+            
+            <tag> 搜索引擎 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>绿色纯净下载网站-软猫下载</title>
+      <link href="/posts/1ec0df688f03/"/>
+      <url>/posts/1ec0df688f03/</url>
+      
+        <content type="html"><![CDATA[<p>软猫下载-自称纯净无插件的软件 APP 下载平台！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>软猫下载提供多方面的软件下载服务，基本覆盖日常软件使用的方方面面，做的很不错，整体网站环境给人感觉很舒适，不过网站有少量的广告。</p><p>软猫下载提供普通下载和高速下载，高速下载需要注册账户才能使用，普通下载则不需要。</p><h2 id="预览："><a href="#预览：" class="headerlink" title="预览："></a>预览：</h2><p><img src="https://static.luozhinet.com/28/f46b3d5a36103f1cc31b9db334dfbd"></p><p><img src="https://static.luozhinet.com/1e/5bb37e3db78b64bc0dadeb6506e857"></p><p><img src="https://static.luozhinet.com/c1/625356590dbcfa47e0c91d6834013c"></p><h2 id="地址："><a href="#地址：" class="headerlink" title="地址："></a>地址：</h2><p>直达：<a href="https://www.softmall.net/">https://www.softmall.net/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 网站 </tag>
+            
+            <tag> 软件 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>CrxDL-Chrome扩展离线下载</title>
+      <link href="/posts/f30c3df9c2fc/"/>
+      <url>/posts/f30c3df9c2fc/</url>
+      
+        <content type="html"><![CDATA[<p>大家时间宝贵，不需要关注什么公众号才能下载扩展之类的，对于此我也是比较痛恨的！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>CrxDL提供Chrome扩展插件Crx离线安装包，提供了常见的油猴插件、Infinity、Proxy SwitchyOmega等众多热门插件。</p><h2 id="界面"><a href="#界面" class="headerlink" title="界面:"></a>界面:</h2><p><img src="https://static.luozhinet.com/03/d6ba63d04b396df556da5414e56693"></p><h2 id="传送门："><a href="#传送门：" class="headerlink" title="传送门："></a>传送门：</h2><p><a href="https://crxdl.com/">https://crxdl.com/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Chrome扩展 </tag>
+            
+            <tag> 插件 </tag>
+            
+            <tag> 油猴插件 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>UP云搜-海量资源任你搜</title>
+      <link href="/posts/6f929ba7ef0a/"/>
+      <url>/posts/6f929ba7ef0a/</url>
+      
+        <content type="html"><![CDATA[<p>UP云搜-原阿里云搜，资源全，热度高，下载快，更新及时！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>云盘搜索的网站有很多，网盘也分为了很多网盘，比如老大哥百度网盘，还有一些网盘蓝奏云，Google云盘，都有衍生的云盘搜索网站！</p><p>今天介绍的是UP云搜，搜索学习资料，小说、视频等都不在话下！当然不正经的也能搜得到，哈哈哈！</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/33/a9b0473a28bc59e181c83768a9feeb"></p><p><img src="https://static.luozhinet.com/8c/f51ecef536e1f0af290a0d4d2b0343"></p><p><img src="https://static.luozhinet.com/4a/8f00a0c922e198209e1589455650db"></p><p>真的是学习的好帮手，利用互联网资源，抓紧时间开始学习吧！</p><p>加油吧！少年！攀登一座山，后面的路就变得没那么崎岖了！</p><h2 id="网站地址："><a href="#网站地址：" class="headerlink" title="网站地址："></a>网站地址：</h2><p><a href="https://www.upyunso.com/">https://www.upyunso.com/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 搜索 </tag>
+            
+            <tag> 视频 </tag>
+            
+            <tag> 资源 </tag>
+            
+            <tag> 网盘 </tag>
+            
+            <tag> 云搜 </tag>
+            
+            <tag> 云盘 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>免费PDF、视频、图片转换-在线工具TinyWow</title>
+      <link href="/posts/ad5499059bd8/"/>
+      <url>/posts/ad5499059bd8/</url>
+      
+        <content type="html"><![CDATA[<p>在这里可以任意转换PDF文件，视频剪辑、压缩、转化GIF，图片转换、二维码生成等诸多功能！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>TinyWow 提供免费的在线转换、pdf 和其他方便的工具来帮助您解决各种类型的问题。15 分钟后删除所有已处理和未处理的文件！这是一个制作精美小工具网站，大概率是一个国人做的，界面是英文，但是基本都能看懂，推荐使用Google浏览器一键翻译哦！</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/ff/38c874e16cc2021df8124aa66486fa"></p><p><img src="https://static.luozhinet.com/b6/1f1c185f4fb51c43f67b728d616380"></p><h2 id="网址直达："><a href="#网址直达：" class="headerlink" title="网址直达："></a>网址直达：</h2><p><a href="https://tinywow.com/">https://tinywow.com/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 网站 </tag>
+            
+            <tag> 转换 </tag>
+            
+            <tag> pdf </tag>
+            
+            <tag> tinywow </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>轻松得使你的收藏夹变成强大的新标签页 -小舒同学</title>
+      <link href="/posts/13b70ad2982c/"/>
+      <url>/posts/13b70ad2982c/</url>
+      
+        <content type="html"><![CDATA[<p>可能很好奇，小舒同学是啥？小爱同学？NO！小舒同学是省事、高效的新一代新建标签页浏览器扩展，让你的主页更加简单，更加方便！</p><p>简单并不意味着欠缺或低劣，也不意味着不注重装饰或者完全赤裸裸。而是说装饰应该紧密贴近设计本身，任何无关的要素都应该予以剔除。</p><p>我们费尽心思折腾我们的主页<br>却从来没好好整理过我们的收藏夹</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/51/8474f2abc3b45bb6c2075053596c62"></p><p>开箱即用，无需配置，自定义程度超高！喜欢的就赶紧种草吧！</p><h2 id="地址："><a href="#地址：" class="headerlink" title="地址："></a>地址：</h2><p><a href="https://xiaoshu.app/">https://xiaoshu.app/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 小舒同学 </tag>
+            
+            <tag> 收藏夹 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>几秒钟删除照片里你不需要的元素-Magiceraser</title>
+      <link href="/posts/4b6cb4514456/"/>
+      <url>/posts/4b6cb4514456/</url>
+      
+        <content type="html"><![CDATA[<p>日常处理图片的时候，可能照片的某个地方不需要，要删掉某个元素，很多朋友对于PS不是很精通，但现在有一个很好的图片处理工具，供大家使用！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>Magic Eraser 是一款免费的 AI 工具，可以在几秒钟内从图片中删除不需要的元素，步骤也非常简单，而且无需注册，即传即用！没有任何付费模式，100%免费，试一试，它是完全免费的。</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/f5/8af9cc9b07fdf7c8b1dfc1c414fb80"></p><p><img src="https://static.luozhinet.com/7a/2edab83b4ef97788e9224221801166"></p><p>试试很简单，只需要上传、处理、下载一气呵成，简单越快，用完即走！</p><h2 id="网站地址："><a href="#网站地址：" class="headerlink" title="网站地址："></a>网站地址：</h2><p><a href="https://www.magiceraser.io/">https://www.magiceraser.io/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 网站 </tag>
+            
+            <tag> 删除图片 </tag>
+            
+            <tag> Magiceraser </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>绕过Google play下载APK的一种方式</title>
+      <link href="/posts/fb79b38d6277/"/>
+      <url>/posts/fb79b38d6277/</url>
+      
+        <content type="html"><![CDATA[<p>Google 太强势了，很多手机也安装不了GMS，又想用play商店里面的软件，该怎么办呢？</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>今天给大家介绍一种下载play商店的一个网站，可以下载想要的软件！和APkpure一样，网站境内无法访问，所以，大家准备好家伙什吧！</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/83/5b911481a06980a87196e1c3de3c86"></p><p><img src="https://static.luozhinet.com/26/049ceb160dc48e6709b9308a297b07"></p><p>很简单，打开Google商店链接，添加至下载框，等待解析，之后下载就可以了，非常的easy!</p><h2 id="网站地址："><a href="#网站地址：" class="headerlink" title="网站地址："></a>网站地址：</h2><p><a href="https://apps.evozi.com/">https://apps.evozi.com/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> google </tag>
+            
+            <tag> 下载 </tag>
+            
+            <tag> 商店 </tag>
+            
+            <tag> play </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>腾讯智影AI剪辑-在线视频剪辑</title>
+      <link href="/posts/94456e62e22c/"/>
+      <url>/posts/94456e62e22c/</url>
+      
+        <content type="html"><![CDATA[<p>智影剪辑是腾讯出品在线视频剪辑工作，能够快速帮您制作短视频，提高剪辑效率！</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>智影是一个集素材搜集、视频剪辑、后期包装、渲染导出和发布于一体的免费在线剪辑平台，能够为用户提供从端到端的一站式视频剪辑及制作服务。</p><p>腾讯开发的在线影视剪辑工具，其功能包括：文本配音、字幕识别、视频剪辑、文章转视频、数字人播报、智能去水印、智能横转竖功能。腾讯确实是好用，输入文本文档，有很多发音人可以选择，很多的配音助手可供选择，很多功能都是免费的，大厂确实有钱！</p><p>这个有文章转视频的功能，一篇文章会智能匹配系统的素材库，自动生成视频。知乎也有类似的功能，一篇文档形成后，可以选择生成视频，生成了视频素材后，还可以对视频进行进一步的编辑，其他的功能大家登录账号，找一个视频试一试，看看效果如何！</p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/e0/08a17e26f8faac824669eba02ee8b7"></p><p>网站地址：</p><p><a href="https://zenvideo.qq.com/home">https://zenvideo.qq.com/home</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 视频 </tag>
+            
+            <tag> 素材 </tag>
+            
+            <tag> 剪辑 </tag>
+            
+            <tag> 智影 </tag>
+            
+            <tag> 生成 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>清图-模糊图片变清晰</title>
+      <link href="/posts/1235535247cb/"/>
+      <url>/posts/1235535247cb/</url>
+      
+        <content type="html"><![CDATA[<p>清图是一款基于深度学习技术将模糊图片变清晰的在线工具。</p><h2 id="介绍："><a href="#介绍：" class="headerlink" title="介绍："></a>介绍：</h2><p>清图是一个在线把模糊照片变清晰的免费工具，清图基于领先的深度学习技术，对质量较低的图片进行色彩处理、无损放大等优化处理，重建高清图像。将低分辨率的图片无损放大为高分辨率图片，处理速度非常迅速，体验也不错，分享给需要的小伙伴们！</p><p>修复老照片的福利啊，特别是自己十年前的图片，可以拿出来做一下处理一下，记得登录注册，不注册会有水印，还提供了抠图、证件照、文本自动配音功能。</p><p><img src="https://static.luozhinet.com/ec/0c7d204cbd73826b649d3e89ff3f14"></p><h2 id="界面："><a href="#界面：" class="headerlink" title="界面："></a>界面：</h2><p><img src="https://static.luozhinet.com/36/99fc809bc7d67cc54f46eb6e542891"></p><p>来一张对比图：</p><p><img src="https://static.luozhinet.com/ba/62b088d4a3ac32bcfc9d9cb0149552"></p><h2 id="地址"><a href="#地址" class="headerlink" title="地址:"></a>地址:</h2><p><a href="https://qingtu.cn/">https://qingtu.cn/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 网站推荐 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 图片 </tag>
+            
+            <tag> 清图 </tag>
+            
+            <tag> 无损 </tag>
+            
+            <tag> 处理 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>怎么用python做一个解压缩小工具，以后再也不用下载各种格式的解压缩软件了...</title>
+      <link href="/posts/4acff0774207/"/>
+      <url>/posts/4acff0774207/</url>
+      
+        <content type="html"><![CDATA[<p>经常由于各种压缩格式的不一样用到文件的解压缩时就需要下载不同的解压缩工具去处理不同的文件，以至于桌面上的压缩工具就有三四种，于是使用python做了一个包含各种常见格式的文件解压缩的小工具。</p><p><img src="https://static.luozhinet.com/4f/d15f6e6c40e536ee5f9a705991f07c" alt="file"></p><p>常见的压缩格式主要是下面的四种格式：</p><p>zip 格式的压缩文件，一般使用360压缩软件进行解压缩。<br>tar.gz 格式的压缩文件，一般是在linux系统上面使用tar命令进行解压缩。<br>rar 格式的压缩文件，一般使用rar压缩软件进行解压缩。<br>7z 格式的压缩文件，一般使用7-zip压缩软件进行解压缩。</p><p>导入zip格式的解压缩处理的非标准库。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> zipfile <span class="keyword">as</span> <span class="built_in">zip</span></span><br></pre></td></tr></table></figure><p>编写zip解压缩格式的文件压缩函数。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">do_zip</span>(<span class="params">source_, target_file</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    zip文件压缩</span></span><br><span class="line"><span class="string">    :param source_: 原始文件路径</span></span><br><span class="line"><span class="string">    :param target_file: 目标文件路径</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    zip_file = <span class="built_in">zip</span>.ZipFile(target_file, <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">    pre_len = <span class="built_in">len</span>(os.path.dirname(source_))</span><br><span class="line">    <span class="keyword">for</span> parent, dirnames, filenames <span class="keyword">in</span> os.walk(source_):</span><br><span class="line">        <span class="keyword">for</span> filename <span class="keyword">in</span> filenames:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;filename&#125;</span>&#x27;</span>)</span><br><span class="line">            path_file = os.path.join(parent, filename)</span><br><span class="line">            arcname = path_file[pre_len:].strip(os.path.sep)</span><br><span class="line">            zip_file.write(path_file, arcname)</span><br><span class="line"></span><br><span class="line">    zip_file.close()</span><br></pre></td></tr></table></figure><p>编写zip解压缩格式的文件解压缩函数。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">un_zip</span>(<span class="params">source_file, target_</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    zip文件解压缩</span></span><br><span class="line"><span class="string">    :param source_file: 原始文件路径</span></span><br><span class="line"><span class="string">    :param target_: 目标文件路径</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    zip_file = <span class="built_in">zip</span>.ZipFile(source_file)</span><br><span class="line">    <span class="keyword">if</span> os.path.isdir(target_):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        os.mkdir(target_)</span><br><span class="line">    <span class="keyword">for</span> names <span class="keyword">in</span> zip_file.namelist():</span><br><span class="line">        zip_file.extract(names, target_)</span><br><span class="line">    zip_file.close()</span><br></pre></td></tr></table></figure><p>导入7z格式的解压缩处理的非标准库。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> py7zr</span><br></pre></td></tr></table></figure><p>编写7z解压缩格式的文件压缩函数。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">do_7z</span>(<span class="params">source_, target_file</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    7z文件压缩</span></span><br><span class="line"><span class="string">    :param source_:</span></span><br><span class="line"><span class="string">    :param target_file:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">with</span> py7zr.SevenZipFile(target_file, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        file.extractall(path=source_)</span><br></pre></td></tr></table></figure><p>编写7z解压缩格式的文件解压缩函数。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">un_7z</span>(<span class="params">source_file, target_</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    7z文件解压缩</span></span><br><span class="line"><span class="string">    :param source_file:</span></span><br><span class="line"><span class="string">    :param target_:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">with</span> py7zr.SevenZipFile(source_file, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        file.writeall(target_)</span><br></pre></td></tr></table></figure><p>导入rar格式的解压缩处理的非标准库。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> rarfile <span class="keyword">as</span> rar</span><br></pre></td></tr></table></figure><p>编写rar解压缩格式的文件解压缩函数。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">un_rar</span>(<span class="params">source_file, target_</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    rar文件解压缩</span></span><br><span class="line"><span class="string">    :param source_file: 原始文件</span></span><br><span class="line"><span class="string">    :param target_: 目标文件路径</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    obj_ = rar.RarFile(source_file.decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">    obj_.extractall(target_.decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br></pre></td></tr></table></figure><p>接下来开始进入正题了，首先使用print函数打印一下菜单选项，可以让用户在启动软件后进行菜单的选择。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;==========PYTHON工具：文件解压缩软件==========&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;说明：目前支持zip、7z、rar格式&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;1、文件解压缩格式：zip/rar/7z&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;2、文件操作类型(压缩/解压)：Y/N&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;3、文件路径选择，需要输入相应的操作文件路径&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;==========PYTHON工具：文件解压缩软件==========&#x27;</span>)</span><br></pre></td></tr></table></figure><p>使用input函数接收用户输入的文件解压缩格式。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">format_ = <span class="built_in">input</span>(<span class="string">&#x27;请输入文件解压缩的格式：\n&#x27;</span>)</span><br></pre></td></tr></table></figure><p>使用input函数接收用户输入的文件操作类型（压缩&#x2F;解压）。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type_ = <span class="built_in">input</span>(<span class="string">&#x27;请输入文件操作的类型：\n&#x27;</span>)</span><br></pre></td></tr></table></figure><p>使用input函数接收用户输入的需要操作的文件路径。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source_ = <span class="built_in">input</span>(<span class="string">&#x27;请输入原始文件的存储路径（文件或目录）：\n&#x27;</span>)</span><br></pre></td></tr></table></figure><p>使用input函数接收用户输入的生成的新文件的目标路径。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target_ = <span class="built_in">input</span>(<span class="string">&#x27;请输入目标文件的存储路径（文件或目录）：\n&#x27;</span>)</span><br></pre></td></tr></table></figure><p>为了保持输入的灵活性，加入不同格式不同操作类型的业务判断。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> format_ == <span class="string">&#x27;zip&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;Y&#x27;</span>:</span><br><span class="line">    do_zip(source_, target_)</span><br><span class="line"><span class="keyword">elif</span> format_ == <span class="string">&#x27;zip&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;N&#x27;</span>:</span><br><span class="line">    un_zip(source_, target_)</span><br><span class="line"><span class="keyword">elif</span> format_ == <span class="string">&#x27;rar&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;Y&#x27;</span>:</span><br><span class="line">    un_zip(source_, target_)</span><br><span class="line"><span class="keyword">elif</span> format_ == <span class="string">&#x27;rar&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;N&#x27;</span>:</span><br><span class="line">    un_zip(source_, target_)</span><br><span class="line"><span class="keyword">elif</span> format_ == <span class="string">&#x27;7z&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;Y&#x27;</span>:</span><br><span class="line">    un_zip(source_, target_)</span><br><span class="line"><span class="keyword">elif</span> format_ == <span class="string">&#x27;7z&#x27;</span> <span class="keyword">and</span> type_ == <span class="string">&#x27;N&#x27;</span>:</span><br><span class="line">    un_zip(source_, target_)</span><br></pre></td></tr></table></figure><p>目前功能点是做了三种格式，后期若是需要可能会扩展升级当前的版本。欢迎大家在评论区留言，提供比较新的思路~</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 函数 </tag>
+            
+            <tag> 操作 </tag>
+            
+            <tag> 文件 </tag>
+            
+            <tag> import </tag>
+            
+            <tag> 压缩 </tag>
+            
+            <tag> target_ </tag>
+            
+            <tag> source_ </tag>
+            
+            <tag> zip </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python发送邮件</title>
+      <link href="/posts/76dd1b500ee9/"/>
+      <url>/posts/76dd1b500ee9/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Python发送邮件"><a href="#Python发送邮件" class="headerlink" title="Python发送邮件"></a>Python发送邮件</h1><p><a href="https://docs.python.org/3.10/library/smtplib.html">smtplib</a> 是 Python 用来发送邮件的模块，<a href="https://docs.python.org/3.10/library/email.html">email</a> 是用来处理邮件消息</p><p>这里，我们使用<a href="https://blog.csdn.net/qq_62789540/article/details/124513178?spm=1001.2014.3001.5501">装饰器</a>来制作发送邮件的功能</p><h2 id="一、-文本信息"><a href="#一、-文本信息" class="headerlink" title="一、 文本信息"></a>一、 文本信息</h2><p>我们使用<code>MIMEText</code>来发送文本信息</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> smtplib <span class="keyword">import</span> SMTP</span><br><span class="line"><span class="keyword">from</span> email.mime.text <span class="keyword">import</span> MIMEText  <span class="comment"># 发送文本信息使用的库</span></span><br><span class="line"><span class="keyword">from</span> email.header <span class="keyword">import</span> Header  <span class="comment"># 设置请求的头部信息</span></span><br><span class="line"><span class="keyword">from</span> email.utils <span class="keyword">import</span> formataddr  <span class="comment"># 格式化</span></span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> wraps</span><br><span class="line"></span><br><span class="line">receivers = [<span class="string">&#x27;a.l.kun@qq.com&#x27;</span>,]  <span class="comment"># 接收者为可迭代对象，可以实现邮件的群发</span></span><br><span class="line">subject = <span class="string">&#x27;测试邮件&#x27;</span>  <span class="comment"># 设置邮件的标题</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decorate</span>(<span class="params">fun_</span>):</span><br><span class="line">    </span><br><span class="line">    username = <span class="string">&#x27;2855595515@qq.com&#x27;</span>  <span class="comment"># 发送邮件的qq号</span></span><br><span class="line">    password_pass = <span class="string">&#x27;meryyupicqjjciei&#x27;</span>  <span class="comment"># 授权密码，有的邮箱是使用登录密码</span></span><br><span class="line">    smtp = SMTP(<span class="string">&#x27;smtp.qq.com&#x27;</span>)  <span class="comment"># 创建一个SMTP服务器，这里使用qq邮箱</span></span><br><span class="line">    smtp.login(username, password_pass)  <span class="comment"># 登录</span></span><br><span class="line">    </span><br><span class="line"><span class="meta">    @wraps(<span class="params">fun_</span>)</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">func_mail</span>(<span class="params">*args, **kwargs</span>):</span><br><span class="line">        fun_(smtp, username, *args, **kwargs)  <span class="comment"># 调用发邮件的函数</span></span><br><span class="line">        smtp.quit()  <span class="comment"># 关闭服务器</span></span><br><span class="line">        smtp.close()  </span><br><span class="line">    <span class="keyword">return</span> func_mail</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@decorate</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mail</span>(<span class="params">smtp, username</span>):</span><br><span class="line">    <span class="keyword">for</span> receiver_ <span class="keyword">in</span> receivers:</span><br><span class="line">        msgRoot = MIMEText(<span class="string">f&quot;这是一个测试邮件，不要回复哦~~~&quot;</span>, <span class="string">&quot;html&quot;</span>, <span class="string">&quot;utf-8&quot;</span>)  <span class="comment"># 如果第二个参数为plain，则是发送纯文本信息，如果邮件有中文，就要使用utf-8</span></span><br><span class="line">        msgRoot[<span class="string">&quot;Subject&quot;</span>] = Header(subject, <span class="string">&quot;utf-8&quot;</span>)  <span class="comment"># 设置文本标题</span></span><br><span class="line">        msgRoot[<span class="string">&#x27;From&#x27;</span>] = formataddr((<span class="string">&quot;A.L.Kun&quot;</span>, username))  <span class="comment"># 设置发件人信息</span></span><br><span class="line">        msgRoot[<span class="string">&#x27;To&#x27;</span>] = formataddr((receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], receiver_))  <span class="comment"># 设置收件人信息</span></span><br><span class="line">        smtp.sendmail(username, receiver_, msgRoot.as_string())  <span class="comment"># 发送邮件</span></span><br><span class="line">        <span class="comment"># smtp.set_debuglevel(1)  # 输出调试信息</span></span><br><span class="line">        <span class="built_in">print</span>(receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], <span class="string">&#x27;:发送完成&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    mail()</span><br></pre></td></tr></table></figure><blockquote><p>使用装饰器的好处，可以动态创建一个发送邮件的对象，同时可以不用关注邮件的配置，只要关注邮件的内容</p></blockquote><h2 id="二、-图片信息"><a href="#二、-图片信息" class="headerlink" title="二、 图片信息"></a>二、 图片信息</h2><p>我们可以使用<code>MIMEImage</code>来读取图片数据，然后进行发送</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> smtplib <span class="keyword">import</span> SMTP</span><br><span class="line"><span class="keyword">from</span> email.mime.text <span class="keyword">import</span> MIMEText  <span class="comment"># 发送文本信息使用的库</span></span><br><span class="line"><span class="keyword">from</span> email.mime.multipart <span class="keyword">import</span> MIMEMultipart  <span class="comment"># 可以发送多种类型的邮件</span></span><br><span class="line"><span class="keyword">from</span> email.mime.image <span class="keyword">import</span> MIMEImage  <span class="comment"># 读取图片信息</span></span><br><span class="line"><span class="keyword">from</span> email.header <span class="keyword">import</span> Header  </span><br><span class="line"><span class="keyword">from</span> email.utils <span class="keyword">import</span> formataddr  </span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> wraps</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">receivers = [<span class="string">&#x27;a.l.kun@qq.com&#x27;</span>,]</span><br><span class="line">subject = <span class="string">&#x27;测试邮件&#x27;</span></span><br><span class="line">pic_path = <span class="string">&quot;./test.jpeg&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decorate</span>(<span class="params">fun_</span>):</span><br><span class="line">    username = <span class="string">&#x27;2855595515@qq.com&#x27;</span></span><br><span class="line">    password_pass = <span class="string">&#x27;mdsrecuicqjjciei&#x27;</span></span><br><span class="line">    smtp = SMTP(<span class="string">&#x27;smtp.qq.com&#x27;</span>)</span><br><span class="line">    smtp.login(username, password_pass)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @wraps(<span class="params">fun_</span>)</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">func_mail</span>(<span class="params">*args, **kwargs</span>):</span><br><span class="line">        fun_(smtp, username, *args, **kwargs)</span><br><span class="line">        smtp.quit()</span><br><span class="line">        smtp.close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> func_mail</span><br><span class="line"></span><br><span class="line"><span class="meta">@decorate</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mail</span>(<span class="params">smtp, username</span>):</span><br><span class="line">    <span class="keyword">for</span> receiver_ <span class="keyword">in</span> receivers:</span><br><span class="line">        msgRoot = MIMEMultipart(<span class="string">&quot;related&quot;</span>)  <span class="comment"># 创建一个容器，可以为related模式，可以往里面添加文本、图片、附件</span></span><br><span class="line">        msgRoot[<span class="string">&quot;Subject&quot;</span>] = Header(subject, <span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        msgRoot[<span class="string">&#x27;From&#x27;</span>] = formataddr((<span class="string">&quot;A.L.Kun&quot;</span>, username))</span><br><span class="line">        msgRoot[<span class="string">&#x27;To&#x27;</span>] = formataddr((receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], receiver_))</span><br><span class="line">        pic_data = <span class="built_in">open</span>(pic_path, <span class="string">&quot;rb&quot;</span>).read()  <span class="comment"># 读取图片数据</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;以附件的形式发送图片&quot;&quot;&quot;</span></span><br><span class="line">        send_img_f = MIMEImage(pic_data)</span><br><span class="line">        <span class="comment"># 设置头部信息，第一个参数和第二个参数都表示以附件的形式发送，最后一个表示文件的文件名</span></span><br><span class="line">        <span class="comment"># 只要设置了这个头部信息，就是为发送附件</span></span><br><span class="line">        send_img_f.add_header(<span class="string">&#x27;Content-Disposition&#x27;</span>, <span class="string">&#x27;attachment&#x27;</span>, filename=(<span class="string">&#x27;utf-8&#x27;</span>, <span class="string">&#x27;&#x27;</span>, os.path.basename(pic_path)))</span><br><span class="line">        msgRoot.attach(send_img_f)  <span class="comment"># 将图片附件添加到容器中</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;将图片添加到正文中&quot;&quot;&quot;</span></span><br><span class="line">        send_img_c = MIMEImage(pic_data)</span><br><span class="line">        <span class="comment"># 设置图片的唯一标识，即图片的id为img1，通过`cid:img1`访问</span></span><br><span class="line">        send_img_c.add_header(<span class="string">&quot;Content-Id&quot;</span>, <span class="string">&quot;&lt;img1&gt;&quot;</span>)</span><br><span class="line">        msgRoot.attach(send_img_c)  <span class="comment"># 要先将图片数据上传到容器中</span></span><br><span class="line">        img_text = <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            &lt;p&gt;这是一张图片：&lt;/p&gt;</span></span><br><span class="line"><span class="string">            &lt;br&gt;&lt;img src=&quot;cid:img1&quot; width=&quot;300&quot; alt=<span class="subst">&#123;os.path.basename(pic_path)&#125;</span>&gt;&lt;/br&gt;</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>  <span class="comment"># 使用导入的图片数据</span></span><br><span class="line">        msgRoot.attach(MIMEText(img_text, <span class="string">&quot;html&quot;</span>, <span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line"></span><br><span class="line">        smtp.sendmail(username, receiver_, msgRoot.as_string())</span><br><span class="line">        <span class="built_in">print</span>(receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], <span class="string">&#x27;:发送完成&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    mail()</span><br></pre></td></tr></table></figure><h2 id="三、-附件"><a href="#三、-附件" class="headerlink" title="三、 附件"></a>三、 附件</h2><p>我们使用<code>MIMEApplication</code>来发送附件</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">from</span> smtplib <span class="keyword">import</span> SMTP</span><br><span class="line"><span class="keyword">from</span> email.mime.multipart <span class="keyword">import</span> MIMEMultipart</span><br><span class="line"><span class="keyword">from</span> email.header <span class="keyword">import</span> Header</span><br><span class="line"><span class="keyword">from</span> email.mime.application <span class="keyword">import</span> MIMEApplication  <span class="comment"># 发送二进制附件</span></span><br><span class="line"><span class="keyword">from</span> email.utils <span class="keyword">import</span> formataddr</span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> wraps</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">receivers = [<span class="string">&#x27;a.l.kun@qq.com&#x27;</span>,]</span><br><span class="line">subject = <span class="string">&#x27;测试邮件&#x27;</span></span><br><span class="line">file_lis = [<span class="string">&quot;./test2.pptx&quot;</span>, <span class="string">&quot;./test.jpeg&quot;</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decorate</span>(<span class="params">fun_</span>):</span><br><span class="line">    username = <span class="string">&#x27;2855595515@qq.com&#x27;</span></span><br><span class="line">    password_pass = <span class="string">&#x27;mwdftrtycqjjciei&#x27;</span></span><br><span class="line">    smtp = SMTP(<span class="string">&#x27;smtp.qq.com&#x27;</span>)</span><br><span class="line">    smtp.login(username, password_pass)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @wraps(<span class="params">fun_</span>)</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">func_mail</span>(<span class="params">*args, **kwargs</span>):</span><br><span class="line">        fun_(smtp, username, *args, **kwargs)</span><br><span class="line">        smtp.quit()</span><br><span class="line">        smtp.close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> func_mail</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@decorate</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mail</span>(<span class="params">smtp, username</span>):</span><br><span class="line">    <span class="keyword">for</span> receiver_ <span class="keyword">in</span> receivers:</span><br><span class="line">        msgRoot = MIMEMultipart(<span class="string">&quot;related&quot;</span>)  <span class="comment"># 创建一个容器，必须为related模式，可以往里面添加文本、图片、附件</span></span><br><span class="line">        msgRoot[<span class="string">&quot;Subject&quot;</span>] = Header(subject, <span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">        msgRoot[<span class="string">&#x27;From&#x27;</span>] = formataddr((<span class="string">&quot;A.L.Kun&quot;</span>, username))</span><br><span class="line">        msgRoot[<span class="string">&#x27;To&#x27;</span>] = formataddr((receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], receiver_))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> file <span class="keyword">in</span> file_lis:</span><br><span class="line">            <span class="comment"># 创建二进制文件数据</span></span><br><span class="line">            msgFile = MIMEApplication(<span class="built_in">open</span>(file, <span class="string">&quot;rb&quot;</span>).read())</span><br><span class="line">            <span class="comment"># 设置标头</span></span><br><span class="line">            msgFile.add_header(<span class="string">&#x27;Content-Disposition&#x27;</span>, <span class="string">&#x27;attachment&#x27;</span>, filename=(<span class="string">&#x27;utf-8&#x27;</span>, <span class="string">&#x27;&#x27;</span>, os.path.basename(file)))</span><br><span class="line">            <span class="comment"># 将数据添加到容器中</span></span><br><span class="line">            msgRoot.attach(msgFile)</span><br><span class="line"></span><br><span class="line">        smtp.sendmail(username, receiver_, msgRoot.as_string())</span><br><span class="line">        <span class="built_in">print</span>(receiver_.split(<span class="string">&quot;@&quot;</span>)[<span class="number">0</span>], <span class="string">&#x27;:发送完成&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    mail()</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> 邮箱 </tag>
+            
+            <tag> 函数 </tag>
+            
+            <tag> smtp </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Linux 实用命令</title>
+      <link href="/posts/9792de8b38a6/"/>
+      <url>/posts/9792de8b38a6/</url>
+      
+        <content type="html"><![CDATA[<h2 id="实用命令："><a href="#实用命令：" class="headerlink" title="实用命令："></a>实用命令：</h2><h3 id="1、查看端口占用情况"><a href="#1、查看端口占用情况" class="headerlink" title="1、查看端口占用情况"></a>1、查看端口占用情况</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看该端口是否被占用</span></span><br><span class="line">netstat -lnp|grep 5000</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看端口是否被占用</span></span><br><span class="line">lsof -i:<span class="string">&#x27;5000&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 杀死端口占用进程，根据进程号杀死</span></span><br><span class="line"><span class="built_in">kill</span> -9 28533</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再次查看，如果查看时候提示命令不存在 ：</span></span><br><span class="line"><span class="comment"># 需要先安装一下命令</span></span><br><span class="line">yum -y install net-tools</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最常见的还有防火墙</span></span><br><span class="line">yum install firewalld</span><br></pre></td></tr></table></figure><h3 id="2、查看空间使用清理"><a href="#2、查看空间使用清理" class="headerlink" title="2、查看空间使用清理"></a>2、查看空间使用清理</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看空间使用情况</span></span><br><span class="line"><span class="built_in">df</span> -h</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看当前目录下空间使用情况</span></span><br><span class="line"><span class="built_in">du</span> -lh --max-depth=1</span><br></pre></td></tr></table></figure><h3 id="3、按时间批量删除文件"><a href="#3、按时间批量删除文件" class="headerlink" title="3、按时间批量删除文件"></a>3、按时间批量删除文件</h3><p>需要根据时间删除这个目录下的文件，&#x2F;home&#x2F;lifeccp&#x2F;dicom&#x2F;studies，清理掉20天之前的无效数据。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /home/lifeccp/dicom/studies -mtime +21 -name <span class="string">&quot;*.*&quot;</span> -<span class="built_in">exec</span> <span class="built_in">rm</span> -Rf &#123;&#125; \;</span><br></pre></td></tr></table></figure><blockquote><p>简要解释该Shell命令</p></blockquote><ul><li>&#x2F;home&#x2F;lifeccp&#x2F;dicom&#x2F;studies ：准备要进行清理的任意目录</li><li>-mtime：标准语句写法</li><li>＋10：查找10天前的文件，这里用数字代表天数，＋30表示查找30天前的文件</li><li>“*.*“：希望查找的数据类型，”*.jpg”表示查找扩展名为jpg的所有文件，”*“表示查找所有文件</li><li>-exec：固定写法</li><li>rm -rf：强制删除文件，包括目录</li><li> {} \; ：固定写法，一对大括号+空格+&#x2F;+;</li></ul><p>注意：在我本人使用的时候，发现可能会存在1-2天的延后误差，比如：删除10天前的，可能删除了12天前的，大家执行完可以检查一下</p><h3 id="4、按时间查找文件"><a href="#4、按时间查找文件" class="headerlink" title="4、按时间查找文件"></a>4、按时间查找文件</h3><blockquote><p>根据日期查找相关文件</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /recordings/ 查找的目录 ，默认当前目录</span></span><br><span class="line"><span class="built_in">ls</span> --full-time /recordings/ | sed -n <span class="string">&#x27;/2018-03-21/p&#x27;</span></span><br></pre></td></tr></table></figure><blockquote><p>按照日期范围查找相关文件</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">find images/ -newermt <span class="string">&#x27;2021-01-01&#x27;</span> ! -newermt <span class="string">&#x27;2021-01-31&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 按时间范围拷贝文件到另一台服务器（内网）</span></span><br><span class="line">scp -p ssh端口（22）<span class="string">&#x27;文件路径&#x27;</span> <span class="string">&#x27;目标主机账号&#x27;</span>@<span class="string">&#x27;IP&#x27;</span>:<span class="string">&#x27;存放到目标路径&#x27;</span></span><br></pre></td></tr></table></figure><blockquote><p> 统计文件个数</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wc -l 统计文件个数</span></span><br><span class="line"><span class="built_in">ls</span> --full-time /recordings/ | sed -n <span class="string">&#x27;/2018-03-21/p&#x27;</span> | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure><h3 id="5、文件、文件夹统计"><a href="#5、文件、文件夹统计" class="headerlink" title="5、文件、文件夹统计"></a>5、文件、文件夹统计</h3><h4 id="5-1、个数统计"><a href="#5-1、个数统计" class="headerlink" title="5.1、个数统计"></a>5.1、个数统计</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Linux 中可以通过 <span class="built_in">ls</span> -l 或者 find -<span class="built_in">type</span> f 来统计文件、文件夹的个数，具体操作如下。</span><br><span class="line">查看某文件夹下文件的个数：</span><br><span class="line"><span class="built_in">ls</span> -l | grep <span class="string">&quot;^-&quot;</span> | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="comment"># ls -l 列出文件及文件夹</span></span><br><span class="line"><span class="comment"># &quot;^-&quot; 以-开头的行 文件以-开头 文件夹以d开头</span></span><br><span class="line"><span class="comment"># wc -l 统计行数</span></span><br><span class="line">或者可以：</span><br><span class="line">find ./ -<span class="built_in">type</span> f | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="comment"># ./ 在当前目录查找</span></span><br><span class="line"><span class="comment"># -type f 文件类型 -name &quot;*.conf*&quot; 根据文件后缀查找</span></span><br><span class="line"><span class="comment"># wc -l 统计行数</span></span><br><span class="line">查看某文件夹下文件的个数，包括子文件夹：</span><br><span class="line"><span class="built_in">ls</span> -lR | grep <span class="string">&quot;^-&quot;</span> | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="comment"># -R 递归列出子目录的文件</span></span><br><span class="line">查看某文件夹下文件夹的个数，包括子文件夹：</span><br><span class="line"><span class="built_in">ls</span> -lR | grep <span class="string">&quot;^d&quot;</span> | <span class="built_in">wc</span> -l</span><br><span class="line"><span class="comment"># &quot;^d&quot; 以d开头的行</span></span><br></pre></td></tr></table></figure><h4 id="5-2、大小统计"><a href="#5-2、大小统计" class="headerlink" title="5.2、大小统计"></a>5.2、大小统计</h4><p><em>使用 du、df、free 进行统计，详细见下</em></p><h5 id="1、du详解"><a href="#1、du详解" class="headerlink" title="1、du详解"></a><em>1、du详解</em></h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">2.1 <span class="built_in">du</span> 详解</span><br><span class="line">Linux <span class="built_in">du</span> 命令用于显示目录或文件的大小。</span><br><span class="line"><span class="built_in">du</span> 会显示指定的目录或文件所占用的磁盘空间。</span><br><span class="line">语法：</span><br><span class="line"><span class="built_in">du</span> [-abcDhHklmsSx] [目录或文件]</span><br><span class="line">参数说明：</span><br><span class="line">-a 或 -all：显示目录中文件的大小，单位 KB</span><br><span class="line">-b：显示目录中文件的大小，以字节 byte 为单位</span><br><span class="line">-c：显示目录中文件的大小，同时显示总和，单位 KB</span><br><span class="line">-k：显示目录中文件的大小，单位 KB</span><br><span class="line">-m：显示目录中文件的大小，单位 MB</span><br><span class="line">-s：仅显示目录的总值，单位 KB</span><br><span class="line">-h：--human-readable 以K，M，G为单位，提高信息的可读性。</span><br><span class="line">-x：以一开始处理时的文件系统为准，若遇上其它不同的文件系统目录则略过。</span><br><span class="line">-H：--si 与 -h参数相同，但是 K、M、G是以1000为换算单位</span><br><span class="line">--max-depth = 1 ：遍历深度</span><br><span class="line">实例：</span><br><span class="line"><span class="built_in">du</span> -h * <span class="comment"># 显示当前目录下文件的大小</span></span><br><span class="line"><span class="built_in">du</span> -sh <span class="comment"># 查看当前文件夹大小</span></span><br><span class="line"><span class="built_in">du</span> -sh * | <span class="built_in">sort</span> -nr <span class="comment"># 统计当前文件夹（目录）大小，并按文件大小排序 -- 加了-h之后排序有问题</span></span><br><span class="line"><span class="built_in">du</span> -sk filename <span class="comment"># 查看指定文件大小</span></span><br><span class="line">使用 <span class="built_in">sort</span> 的参数 -nr 表示要以数字排序法进行反向排序，因为我们要对目录大小做排序，所以不可以使用 human-readable 的大小输出，不然目录大小中会有 K、M 等字样，会造成排序不正确。</span><br><span class="line">如果有一个进程在打开一个大文件的时候，这个大文件直接被 <span class="built_in">rm</span> 或者<span class="built_in">mv</span> 掉，则 <span class="built_in">du</span> 会更新统计数值，<span class="built_in">df</span> 不会更新统计数值，还是认为空间没有释放。直到这个打开大文件的进程被Kill掉。</span><br></pre></td></tr></table></figure><h5 id="2、df详解"><a href="#2、df详解" class="headerlink" title="2、df详解"></a>2、df详解</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">2.2 <span class="built_in">df</span> 详解</span><br><span class="line">Linux <span class="built_in">df</span> 命令显示磁盘分区上可以使用的磁盘空间。</span><br><span class="line"><span class="built_in">df</span> 可以查看一级文件夹大小、使用比例、档案系统及其挂入点，但对文件却无能为力。</span><br><span class="line"><span class="built_in">du</span>可以查看文件及文件夹的大小。</span><br><span class="line">两者配合使用，非常有效。</span><br><span class="line">比如用 <span class="built_in">df</span> 查看哪个一级目录过大，然后用 <span class="built_in">du</span> 查看文件夹或文件的大小，如此便可迅速确定症结。</span><br><span class="line">语法：</span><br><span class="line"><span class="built_in">df</span> [选项] [file]</span><br><span class="line">参数说明：</span><br><span class="line">-a： --all 包含所有的具有 0 Blocks 的文件系统，单位默认 KB</span><br><span class="line">-h：使用 -h 选项以 KB、MB、GB 的单位来显示，可读性高~~~（最常用）</span><br><span class="line">-i：查看目前档案系统 inode 的使用情形</span><br><span class="line">有的时候虽然档案系统还有空间，但若没有足够的 inode 来存放档案的信息，一样会不能增加新的档案。</span><br><span class="line">所谓的 inode 是用来存放档案及目录的基本信息 (metadata)，包含时间、档名、使用者及群组等。在分割扇区时，系统会先做出一堆 inode 以供以后使用，inode 的数量关系着系统中可以建立的档案及目录总数。如果要存的档案大部分都很小，则同样大小的硬盘中会有较多的档案，也就是说需要较多的 inode 来挂档案及目录。</span><br><span class="line">实例：</span><br><span class="line"><span class="built_in">df</span> -h</span><br><span class="line">Filesystem            Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/sda1             3.9G  300M  3.4G   8% /</span><br><span class="line">/dev/sda7             100G  188M   95G   1% /data0</span><br><span class="line">/dev/sdb1             133G   80G   47G  64% /data1</span><br><span class="line">/dev/sda6             7.8G  218M  7.2G   3% /var</span><br><span class="line">/dev/sda5             7.8G  166M  7.2G   3% /tmp</span><br><span class="line">/dev/sda3             9.7G  2.5G  6.8G  27% /usr</span><br><span class="line">tmpfs                 2.0G     0  2.0G   0% /dev/shm</span><br><span class="line">Filesystem -- 档案系统</span><br><span class="line">Mounted on -- 挂入点</span><br><span class="line">size -- 分区容量</span><br><span class="line">Used -- 已使用的大小</span><br><span class="line">Avail -- 剩下的大小</span><br><span class="line">Use% -- 使用的百分比</span><br><span class="line">FreeBSD下，当硬盘容量已满时，可能会看到已使用的百分比超过 100%，因为 FreeBSD 会留一些空间给 root，让 root 在档案系统满时，还是可以写东西到该档案系统中，以进行管理。</span><br></pre></td></tr></table></figure><h5 id="3、free详解"><a href="#3、free详解" class="headerlink" title="3、free详解"></a>3、free详解</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">2.3 free 详解</span><br><span class="line">Linux free 命令可以显示 Linux 系统中空闲的、已用的物理内存及交互区内存（swap），及被内核使用的 buffer（内核缓冲区内存）。共享内存将被忽略。</span><br><span class="line">语法：</span><br><span class="line">free [参数]</span><br><span class="line">             total       used       free     shared    buffers     cached</span><br><span class="line">Mem:      32948032   32767416     180616          0     139960   29878896</span><br><span class="line">-/+ buffers/cache:    2748560   30199472</span><br><span class="line">Swap:      8193140     664956    7528184</span><br><span class="line">参数说明：</span><br><span class="line">-b：以 Byte 为单位显示内存使用情况</span><br><span class="line">-k：以 KB 为单位显示内存使用情况</span><br><span class="line">-m：以 MB 为单位显示内存使用情况</span><br><span class="line">-g：以 GB 为单位显示内存使用情况</span><br><span class="line">-t：显示内存综合列</span><br></pre></td></tr></table></figure><h3 id="6、查看系统信息"><a href="#6、查看系统信息" class="headerlink" title="6、查看系统信息"></a>6、查看系统信息</h3><blockquote><p>查看内核版本</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看内核</span></span><br><span class="line"><span class="built_in">uname</span> -r</span><br></pre></td></tr></table></figure><blockquote><p>查看系统信息</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看系统信息</span></span><br><span class="line">lsb_release -a</span><br><span class="line"><span class="comment"># 没有以上的命令，可使用一下命令查看 XX为发行版名称。如 centos-release</span></span><br><span class="line">Cat /etc/xxx-release</span><br></pre></td></tr></table></figure><blockquote><p> 查看内核和操作系统相关信息</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看内核</span></span><br><span class="line"><span class="built_in">uname</span> -r</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看操作系统相关信息</span></span><br><span class="line"><span class="built_in">uname</span> -a</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看宽带实时使用率</span></span><br><span class="line">nload</span><br></pre></td></tr></table></figure><h3 id="7、开放及查看端口"><a href="#7、开放及查看端口" class="headerlink" title="7、开放及查看端口"></a>7、开放及查看端口</h3><blockquote><p>查看已开放端口</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看开放端口</span></span><br><span class="line">firewall-cmd --list-ports</span><br></pre></td></tr></table></figure><blockquote><p>开放及关闭端口（开放后需要要重启防火墙才生效）</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开放单个端口</span></span><br><span class="line">firewall-cmd --zone=public --add-port=8080/tcp --permanent</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开放多个端口</span></span><br><span class="line">firewall-cmd --zone=public --add-port=20000-29999/tcp --permanent</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭端口</span></span><br><span class="line">firewall-cmd --zone=public --remove-port=8080/tcp --permanent</span><br></pre></td></tr></table></figure><p><strong>（–permanent  为永久生效，不加为单次有效（重启失效））</strong></p><blockquote><p> 防火墙操作</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看防火墙状态</span></span><br><span class="line">systemctl status firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启防火墙</span></span><br><span class="line">systemctl start firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭防火墙</span></span><br><span class="line">systemctl stop firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启防火墙</span></span><br><span class="line">systemctl restart firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开机自启</span></span><br><span class="line">systemctl <span class="built_in">enable</span> firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开机禁用</span></span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure><h3 id="8、文件夹或文件权限赋予"><a href="#8、文件夹或文件权限赋予" class="headerlink" title="8、文件夹或文件权限赋予"></a>8、文件夹或文件权限赋予</h3><blockquote><p>给.sh文件赋予可执行权限</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x  文件名</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例</span></span><br><span class="line"><span class="built_in">chmod</span> +x test.sh</span><br></pre></td></tr></table></figure><h4 id="8-1、符号类型修改法"><a href="#8-1、符号类型修改法" class="headerlink" title="8.1、符号类型修改法"></a>8.1、符号类型修改法</h4><p>我们把九个权限分别是 <strong>user，group，others</strong>三种身份，借由<strong>u、g、o</strong>来代表，采用<strong>a</strong>表示所有权限，其余的<strong>r、w、x</strong>分别代表读、写、执行权限。使用如下表的方法</p><p><img src="https://static.luozhinet.com/c2/854d62d4b7088a7fcecaa22c44acec"></p><p>比如我们要对一个文件权限为“-rwxr-xr–”修改为“-rwxrwxr-x”,则需要对用户组身份的权限追加<strong>w</strong>权限，对其他用户追加<strong>x</strong> 权限，所以这样执行：<br>  <strong>chmod g+w, o+x filename</strong> 或者 <strong>chmod g&#x3D;rwx, o&#x3D;rx filename</strong></p><h3 id="9、扩展命令"><a href="#9、扩展命令" class="headerlink" title="9、扩展命令"></a><strong>9、扩展命令</strong></h3><h4 id="9-1、命令间隔执行"><a href="#9-1、命令间隔执行" class="headerlink" title="9.1、命令间隔执行"></a><strong>9.1、命令间隔执行</strong></h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单条命令间隔执行 </span></span><br><span class="line"><span class="comment"># -d 高亮显示本次刷新和上次刷新不同的地方  如：-d &quot;data&quot;</span></span><br><span class="line"><span class="comment"># -t 可执行复合命令 如： &quot;ps -ef | grep ps&quot;</span></span><br><span class="line">watch -l 1 <span class="string">&#x27;ls&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更多帮助</span></span><br><span class="line">watch --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> 实用命令 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>BS架构通用质量保障工作流程</title>
+      <link href="/posts/b1a6e353d3b0/"/>
+      <url>/posts/b1a6e353d3b0/</url>
+      
+        <content type="html"><![CDATA[<p>质量保障是做好产品十分重要的一步，但是为了快速起项目形成业务，很多项目在设计之初全由前后端开发人员自测，稳定上线后才补上质量保障侧的内容。本文旨在梳理一套BS架构产品的通用质量保障模型。</p><h1 id="产品设计与技术评审阶段"><a href="#产品设计与技术评审阶段" class="headerlink" title="产品设计与技术评审阶段"></a>产品设计与技术评审阶段</h1><p>在设计阶段，QA应当在各评审会1小时前开始阅读并评论方案，以此提高会议效率并尽可能发现其中问题。</p><h2 id="产品定义文档（PRD）评审-x2F-用户体验设计（UED）评审"><a href="#产品定义文档（PRD）评审-x2F-用户体验设计（UED）评审" class="headerlink" title="产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审"></a>产品定义文档（PRD）评审&#x2F;用户体验设计（UED）评审</h2><p>在此阶段，开发（RD）与测试（QA）人员应当替PRD&#x2F;UED捉虫，寻找PRD&#x2F;UED当中的缺漏和未定义行为。在开发之前就尽量完善PRD到RD、QA没有疑问。举个例子：</p><p>需求名为“为搜索框增加搜索历史记录与搜索建议”，PRD中没有显式说明该需求的“记录的历史记录”是点击搜索按钮、按下回车哪一种方式触发；也没有说明搜索历史记录记录的是用户所有搜索行为还是仅记录用户点击搜索建议后产生的搜索行为。这样RD可能会理解&#x2F;曲解PRD，只记录点击搜索建议以后的搜索关键词。显然从用户视角这样的产品很奇怪，但是从RD视角来看“反正PRD这里没定义，怎么好做怎么来呗”。这样的厚度哦就是功能做出来PM发现和自己想的不一样，用户用起来不爽。如果在需求评审阶段就能解释清楚需求定义不明确的内容，这种问题就能大大减少。</p><p>一些常见的思考发散方向为：</p><table><thead><tr><th>方向名</th><th>发散举例</th><th>意义</th></tr></thead><tbody><tr><td>权限控制</td><td>这个需求不需要做权限控制吗</td><td>防止需要控制的功能PM忘记做权限控制，或新功能需要收缩权限但是忘了或者没注意</td></tr><tr><td>数据</td><td>这个需求埋点设计成这样是不是不合适</td><td>埋点放在哪里、怎么触发才能达成PM的需求，收集到他们需要的数据需要一定的前端常识，而PM不一定有相关技术积累</td></tr><tr><td>交互逻辑</td><td>当用户没有某某权限时，这个按钮是否需要置灰</td><td>有些小需求没有UED直接参与，一些展示逻辑PM想的可能不会很全，需要问清楚</td></tr><tr><td>边缘案例</td><td>当子节点数量太多，这个页面下半截会全部被子节点遮挡，要不要加个max-height</td><td>同上</td></tr><tr><td>设计过于复杂&#x2F;简单</td><td>这个功能可以通过和某某现存功能集成的方式实现，不单独开一个页面是否可行？（反之亦然）否则实现成本会太高&#x2F;维护成本会太高</td><td>PM可能不会考虑技术上可以通过耦合&#x2F;解耦合降低系统维护和开发&#x2F;测试成本</td></tr></tbody></table><p>值得注意的是，除非需求太离谱，**不要轻易质疑PM这个需求有什么意义**。我们研发人员如果没有去和用户做调研，不知道客户在想什么就去拍脑袋抢PM的工作只会让PM觉得你很烦。</p><h2 id="技术评审"><a href="#技术评审" class="headerlink" title="技术评审"></a>技术评审</h2><p>一般而言PM不具备很强的技术背景，技术评审中PM会难以捕捉RD设计的方案中可能与PRD不同的地方；因此QA作为技术人员，应仔细评估技术方案能否覆盖整个需求。有研发相关知识的QA更应当就自己理解的技术难点向RD提问来提前暴露排期、技术设计中的漏洞。一些常见的思考方式有：</p><table><thead><tr><th>方向名</th><th>发散举例</th><th>意义</th></tr></thead><tbody><tr><td>性能</td><td>接口这样设计有可能性能不足？这样改接口对性能有多少影响</td><td>性能应当是后端考虑的重要问题，但是如果他们没有考虑，QA要替PM问道</td></tr><tr><td>数据安全</td><td>这些东西放在local storage是否合理，会不会导致泄露或权限控制失败？</td><td>防止RD实现的时候只考虑实现难易程度，不考虑安全性</td></tr><tr><td>实现建议</td><td>最近在推行自动化，请在代码中添加ID等识别符方便QA定位元素</td><td>给前端元素加id、给后端代码加探针都是对前后端没有直接意义但是对整个产品质量保障有重大意义的事情。</td></tr><tr><td>边缘案例</td><td>当子节点数量太多，这个页面下半截会全部被子节点遮挡，要不要加个max-height</td><td>同产品方案评审</td></tr></tbody></table><h2 id="测试用例评审"><a href="#测试用例评审" class="headerlink" title="测试用例评审"></a>测试用例评审</h2><p>测试用例评审的最重要目的是告知RD哪些测试用例需要在交付QA前自行测试完成——这些测试用例被称为“自测用例”；其次，测试用例评审中团队内其他角色可以站在他们的视角上为QA提供更多思路完善测试用例。自测用例的作用是为研发交付测试的产品设置准入门槛，防止研发写了一堆bug以后自己也没试过就直接丢给QA，消耗QA过多人力做重复而无用的工作。自测用例应当覆盖该功能的所有核心要素和最直接影响用户体验的界面组件。但是，自测用例不应该超出PRD显式定义的范畴，覆盖过大面积的自测用例会让RD心力憔悴，也会降低RD充分自测的意愿。</p><h1 id="研发阶段"><a href="#研发阶段" class="headerlink" title="研发阶段"></a>研发阶段</h1><p>研发阶段QA参与相对较少，主要由RD遵守预先设置的质量保障规范来保障前期质量。当然这不意味着在需求开发的时候QA没事情做。QA一般可以在此时完成已上线产品功能的自动化覆盖、巡检和其他未完成的质量管理流程建设。</p><h2 id="代码规范"><a href="#代码规范" class="headerlink" title="代码规范"></a>代码规范</h2><p>严格遵守PEP； 使用TypeScript替代JS；使用ESLint并致力于消除绝大多数error&#x2F;warning；正确命名变量并在弱类型语言&#x2F;动态类型语言中主动使用类型定义等代码编写策略都可以减少意外的问题。一般而言公司会有编写代码的标准流程，团队应在自身实际情况的基础上修改、优化规范并努力执行。</p><h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h2><p>单元测试是<strong>测试单个函数</strong>逻辑是否正确必不可少的部分，单元测试一般由RD团队编写，并尽可能覆盖功能的每个函数。做单元测试时，所有数据全部使用假数据（Mock），所有用例跑在本地，着眼于单个函数内部逻辑而非多个组件之间的联系。</p><p>单元测试一般应占到开发实践20%以上.</p><h2 id="集成测试"><a href="#集成测试" class="headerlink" title="集成测试"></a>集成测试</h2><p>在交付QA前，RD应当根据自测用例列表将集成好的前后端试用、测试一遍。这一过程可以手动进行，也可以通过运行已有的自动化测试用例作回归，只对增量手动测试。</p><p>集成测试的自动化可以考虑QA与RD共建，RD做最低限度的、仅包含自测用例的集成测试；其余边缘、发散用例由QA自动化。</p><h2 id="代码审查"><a href="#代码审查" class="headerlink" title="代码审查"></a>代码审查</h2><p>代码审查不仅要做，还应该好好做。交叉代码审核有利于找出低级编码错误、统一代码风格、严格落实编码规范。这一过程主要在RD内部进行。</p><h1 id="测试阶段"><a href="#测试阶段" class="headerlink" title="测试阶段"></a>测试阶段</h1><p>测试阶段QA应按照基本的工作规范完成端到端手工、自动化测试。根据测试情况对项目做质量评估，决定是否能交付PM验收或是否拒绝RD提测。</p><p>拒绝RD提测一般由于过多测试用例失败或核心流程没走通就提测。</p><h1 id="上线流程管控"><a href="#上线流程管控" class="headerlink" title="上线流程管控"></a>上线流程管控</h1><p>代码在本地跑的通不代表代码上线能跑，QA验收了也不代表真的发现了所有的bug。因此，上线流程管控是必不可少的。在上线流程中，QA和项目组长可以通过一些自动化或流程管理手段减少或消除上线风险。</p><h2 id="CICD"><a href="#CICD" class="headerlink" title="CICD"></a>CICD</h2><p>现代软件开发流程为了减轻编译上线中的重复劳动一般都会配备基本的持续集成开发流水线，在流水线中，我们可以通过添加自动化测试和手动确认卡点来进行各类上线前的检查。</p><p>可能你会问，我们之前做了很多手工和自动化测试了，有必要在临上线还要做卡点检查呢？答案是有必要——一个迭代不会只做一个需求，而测试阶段每个需求是独立测试的。在上线过程中涉及到代码合并、配置文件增删，很有可能出现牵一发而动全身的问题。在这个阶段，我们可以通过下面的节点来增强稳定性</p><ol><li>自动化回归测试节点<br>在这个节点，我们通过运行已有的API自动化、UI自动化、Diff测试、压力测试脚本检查本次上新的功能有没有影响已上线逻辑、有没有导致线上性能劣化。</li><li>小流量&#x2F;灰度测试<br>当自动化测试没有发现问题，对于多机房&#x2F;多集群服务，我们可以先在一个机房的一台机器或部分机器部署服务并在前端实际体验一下新旧业务的核心流程是否出现问题。人在流程中永远是最后兜底的角色。</li></ol><h1 id="线上质量管控"><a href="#线上质量管控" class="headerlink" title="线上质量管控"></a>线上质量管控</h1><p>线上质量管控指的是QA和RD针对已在线上的服务设计的服务稳定性监控。除了对本产品的逻辑进行监控，这种监控还有助于发现由于依赖服务未告知即变更带来的线上问题。</p><h2 id="巡检"><a href="#巡检" class="headerlink" title="巡检"></a>巡检</h2><p>API自动化、UI自动化、Diff测试都可以设置定时巡检。定时巡检的目的就是帮助及时发现依赖服务、基础服务变动导致的自身业务崩溃，避免在大量用户反馈无法使用服务以后才后知后觉，产生巨大影响。巡检的建设中，API自动化和API Diff测试应当为首要建设目标——它们建设简单，收益巨大，也可以作为QA了解本产品所有接口的最好切入点。</p><p>相比侵入性较小的API自动化，性能测试一般只在用户量较低的时段、在部分机房周知各个依赖方的情况下进行。这样操作是为了避免对上下游产生不必要的压力，也为了防止压测时用户量居于高位，影响用户的体验。</p><p>UI自动化有其自身特点——UI改动一般较为细致，也较为没有结构无法预测改动，因而建设优先级相对较低。</p><h2 id="稳定性监控"><a href="#稳定性监控" class="headerlink" title="稳定性监控"></a>稳定性监控</h2><p>稳定性监控可以通过关注时段内日志聚类（接口调用成功率、服务报错数）、资源监控（服务器资源占用情况）等服务数据波动情况来尽早发现可能存在的问题。常用的指标有：<br>链路完成速度同比、常见错误数量波动、服务调用数跌零&#x2F;过低&#x2F;过高、业务数据（如走某个业务分支的请求数占总请求数比例）跌零&#x2F;过低&#x2F;过高、QPS跌零&#x2F;过低&#x2F;过高等</p><h1 id="质量保障标准"><a href="#质量保障标准" class="headerlink" title="质量保障标准"></a>质量保障标准</h1><p>QA的另一个关键工作时制定质量保障标准。服务不可能永远不出错，出错后的应对措施必须再出错前就决定好，才不会在出错后无所适从。QA需要建设的质量保障标准一般有测试用例标准、提测准入标准、bug修复流程与时效要求、线上事故定级标准与复盘流程等</p><h2 id="测试用例标准"><a href="#测试用例标准" class="headerlink" title="测试用例标准"></a>测试用例标准</h2><p>指的是QA编写测试用例的方式方法和基本结构、不同优先级的用例划分的标准。</p><h2 id="提测准入标准"><a href="#提测准入标准" class="headerlink" title="提测准入标准"></a>提测准入标准</h2><p>指的是达到何种标准，RD可以交付产品到QA进行测试。一般而言要求100%自测用例通过方可提交测试。</p><h2 id="bug修复流程与时效要求"><a href="#bug修复流程与时效要求" class="headerlink" title="bug修复流程与时效要求"></a>bug修复流程与时效要求</h2><p>指的是不同优先级的bug要求的平均响应时长、平均问题定位时长、平均修复时长及无法及时完成时的升级流程。</p><h2 id="线上事故定级标准与复盘流程"><a href="#线上事故定级标准与复盘流程" class="headerlink" title="线上事故定级标准与复盘流程"></a>线上事故定级标准与复盘流程</h2><p><strong>事故定级标准</strong>指的是线上事故的定义方式、发生线上事故时的定级定损标准与事故响应流程、时效要求。</p><p><strong>事故复盘流程</strong>指的是线上事故<strong>解决后</strong>如何进行事故根因追查、工作流程优化（以避免同类事故重复发生）</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> BS架构 </tag>
+            
+            <tag> 流程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>子网掩码、前缀长度、IP地址数的换算</title>
+      <link href="/posts/4358b00bc797/"/>
+      <url>/posts/4358b00bc797/</url>
+      
+        <content type="html"><![CDATA[<h1 id="子网掩码、前缀长度、IP地址数的换算"><a href="#子网掩码、前缀长度、IP地址数的换算" class="headerlink" title="子网掩码、前缀长度、IP地址数的换算"></a>子网掩码、前缀长度、IP地址数的换算</h1><h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><blockquote><p>子网掩码只有一个功能，就是将IP地址划分为网络地址和主机地址两部分。 如同现实生活中的通讯地址，可以看作省市部分和具体门牌号部分。相同的IP地址，但掩码不一样，则指向的网络部分和主机部分不一样。子网掩码用来判断任意两台计算机的IP地址是否在同一个子网中的根据。如果相同，说明两台计算机在同一个子网中，可以直接通讯；</p></blockquote><ol><li>按照TCP&#x2F;IP协议规定，IP地址用二进制来表示，每个IP地址长32bit，比特换算成字节，就是4个字节；</li><li>子网掩码的长度也是32位，左边是网络位，用二进制数字“1”表示；右边是主机位，用二进制数字“0”表示；</li><li>子网掩码常用两种表示形式，一种是 <code>点分十进制表示法</code>，如： 255.255.255.0；另一种是用 <code>前缀长度</code> 表示，如： 24；</li><li>子网掩码不能单独存在，它必须结合IP地址一起使用；</li><li>子网掩码只有一个作用，就是将某个IP地址划分成网络地址和主机地址两部分；</li></ol><h2 id="子网掩码计算"><a href="#子网掩码计算" class="headerlink" title="子网掩码计算"></a>子网掩码计算</h2><p>子网掩码和前缀长度的换算:</p><ul><li><p>case 1</p><blockquote><p>255.255.255.0 –&gt; 11111111 11111111 11111111 00000000</p></blockquote><figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">网络号： 24</span><br><span class="line">主机号： 8</span><br><span class="line">ip个数： 256</span><br></pre></td></tr></table></figure><p>子网掩码“255.255.255.0”的前缀长度为： 24；<br>后面一个数字可以在0~255范围内任意变化，因此可以提供256个IP地址。但是实际可用的IP地址数量是256-2，即254个，因为主机号不能全是“0”或全是“1”。</p></li><li><p>case 2</p><blockquote><p>255.255.0.0 –&gt; 11111111 11111111 00000000 00000000</p></blockquote><figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">网络号： 16</span><br><span class="line">主机号： 16</span><br><span class="line">ip个数： 256² = 65536</span><br></pre></td></tr></table></figure><p>子网掩码“255.255.0.0”的前缀长度为： 16；<br>后面两个数字可以在0~255范围内任意变化，可以提供 256² 个IP地址。但是实际可用的IP地址数量是256²-2，即65534个。</p></li><li><p>case 3</p><blockquote><p>255.255.252.0 –&gt; 11111111 11111111 11111100 00000000</p></blockquote><figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">网络号： 22</span><br><span class="line">主机号： 10</span><br><span class="line">ip个数： 256 * 2 = 512</span><br></pre></td></tr></table></figure><p>子网掩码“255.255.252.0”的前缀长度为： 22；<br>可以提供 512 个IP地址。但是实际可用的IP地址数量是512 -2，即510个。</p></li></ul><p>…</p><p><a href="https://www.cnblogs.com/librarookie/p/14778002.html" title="二进制、八进制、十进制和十六进制的相互转化（图解）">十进制和二进制的相互转换传送</a></p><p>不想计算的小伙伴可以参考下表</p><h2 id="子网掩码与ip个数对照表"><a href="#子网掩码与ip个数对照表" class="headerlink" title="子网掩码与ip个数对照表"></a>子网掩码与ip个数对照表</h2><p>来源： <a href="https://blog.csdn.net/xbin1981/article/details/79580080">https://blog.csdn.net/xbin1981/article/details/79580080</a></p><table><thead><tr><th>子网掩码</th><th>网络号&#x2F;位</th><th>IP数</th></tr></thead><tbody><tr><td>255.255.255.255</td><td>32</td><td>1</td></tr><tr><td>255.255.255.254</td><td>31</td><td>2</td></tr><tr><td>255.255.255.252</td><td>30</td><td>4</td></tr><tr><td>255.255.255.248</td><td>29</td><td>8</td></tr><tr><td>255.255.255.240</td><td>28</td><td>16</td></tr><tr><td>255.255.255.224</td><td>27</td><td>32</td></tr><tr><td>255.255.255.192</td><td>26</td><td>64</td></tr><tr><td>255.255.255.128</td><td>25</td><td>128</td></tr><tr><td>255.255.255.0</td><td>24</td><td>256</td></tr><tr><td>255.255.254.0</td><td>23</td><td>512</td></tr><tr><td>255.255.252.0</td><td>22</td><td>1024</td></tr><tr><td>255.255.248.0</td><td>21</td><td>2048</td></tr><tr><td>255.255.240.0</td><td>20</td><td>4096</td></tr><tr><td>255.255.224.0</td><td>19</td><td>8192</td></tr><tr><td>255.255.192.0</td><td>18</td><td>16384</td></tr><tr><td>255.255.128.0</td><td>17</td><td>32768</td></tr><tr><td>255.255.0.0</td><td>16</td><td>65536</td></tr><tr><td>255.254.0.0</td><td>15</td><td>131072</td></tr><tr><td>255.252.0.0</td><td>14</td><td>262144</td></tr><tr><td>255.248.0.0</td><td>13</td><td>524288</td></tr><tr><td>255.240.0.0</td><td>12</td><td>1048576</td></tr><tr><td>255.224.0.0</td><td>11</td><td>2097152</td></tr><tr><td>255.192.0.0</td><td>10</td><td>4194304</td></tr><tr><td>255.128.0.0</td><td>9</td><td>8388608</td></tr><tr><td>255.0.0.0</td><td>8</td><td>16777216</td></tr><tr><td>254.0.0.0</td><td>7</td><td>33554432</td></tr><tr><td>252.0.0.0</td><td>6</td><td>67108864</td></tr><tr><td>248.0.0.0</td><td>5</td><td>134217728</td></tr><tr><td>240.0.0.0</td><td>4</td><td>268435456</td></tr><tr><td>224.0.0.0</td><td>3</td><td>536870912</td></tr><tr><td>192.0.0.0</td><td>2</td><td>1073741824</td></tr><tr><td>128.0.0.0</td><td>1</td><td>2147483648</td></tr><tr><td>0.0.0.0</td><td>0</td><td>4294967296</td></tr></tbody></table>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 地址 </tag>
+            
+            <tag> 子网掩码 </tag>
+            
+            <tag> 长度 </tag>
+            
+            <tag> 255.255.255.0 </tag>
+            
+            <tag> 个数 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>5分钟站点生成神器——Docusaurus</title>
+      <link href="/posts/304408dfc52f/"/>
+      <url>/posts/304408dfc52f/</url>
+      
+        <content type="html"><![CDATA[<h2 id="为什么要使用Docusaurus"><a href="#为什么要使用Docusaurus" class="headerlink" title="为什么要使用Docusaurus"></a>为什么要使用Docusaurus</h2><p>Docusaurus 是 Facebook 专门为开源项目开发者提供的一款易于维护的静态网站创建工具，使用 Markdown 即可更新网站。构建一个带有主页、文档、API、帮助以及博客页面的静态网站，只需5分钟。</p><p>Docusaurus 是一个静态站点生成器。它构建了一个具有快速客户端导航的单页应用程序，利用React的全部功能使您的站点具有交互性。它提供开箱即用的文档功能，但可用于创建任何类型的网站（个人网站、产品、博客、营销登录页面等）。</p><blockquote><p>通过本教程中，你将从头开始构建自己的应用，分别使用Docusaurus CLI 和 云开发平台</p></blockquote><h2 id="Docusaurus-CLI-快速搭建项目"><a href="#Docusaurus-CLI-快速搭建项目" class="headerlink" title="Docusaurus-CLI 快速搭建项目"></a>Docusaurus-CLI 快速搭建项目</h2><h3 id="一、搭建本地开发环境"><a href="#一、搭建本地开发环境" class="headerlink" title="一、搭建本地开发环境"></a>一、搭建本地开发环境</h3><ul><li><p>Docusaurus 需要 Node.js版本 &gt;&#x3D; 14 或以上（可以通过运行检查node -v）。您可以使用nvm在安装的单台机器上管理多个 Node 版本。安装 Node.js 时，建议您选中所有与依赖项相关的复选框。</p></li><li><p>npm 包管理器 因为我们通常都会使用Docusaurus 提供的脚手架搭建项目结构，所以要下载并安装 npm 包。本指南使用 npm 客户端命令行界面，该界面默认安装在 Node.js。要检查你是否安装了 npm 客户端，请在终端窗口中运行 npm -v 。</p></li><li><p>Docusaurus 本质上是一组 npm包。</p></li></ul><h3 id="二、创建新的初始应用"><a href="#二、创建新的初始应用" class="headerlink" title="二、创建新的初始应用"></a>二、创建新的初始应用</h3><ul><li>安装 Docusaurus 最简单的方法是使用命令行工具来帮助您搭建 Docusaurus 骨架网站。您可以在新的空存储库或现有存储库中的任何位置运行此命令，它将创建一个包含脚手架文件的新目录。</li></ul><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx create-docusaurus@latest my-website classic</span><br></pre></td></tr></table></figure><ul><li>新建完成后，指定文件夹的目录如下：</li></ul><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">my-website</span><br><span class="line">├── blog</span><br><span class="line">│   ├── 2019-05-28-hola.md</span><br><span class="line">│   ├── 2019-05-29-hello-world.md</span><br><span class="line">│   └── 2020-05-30-welcome.md</span><br><span class="line">├── docs</span><br><span class="line">│   ├── doc1.md</span><br><span class="line">│   ├── doc2.md</span><br><span class="line">│   ├── doc3.md</span><br><span class="line">│   └── mdx.md</span><br><span class="line">├── src</span><br><span class="line">│   ├── css</span><br><span class="line">│   │   └── custom.css</span><br><span class="line">│   └── pages</span><br><span class="line">│       ├── styles.module.css</span><br><span class="line">│       └── index.js</span><br><span class="line">├── static</span><br><span class="line">│   └── img</span><br><span class="line">├── docusaurus.config.js</span><br><span class="line">├── package.json</span><br><span class="line">├── README.md</span><br><span class="line">├── sidebars.js</span><br><span class="line">└── yarn.lock</span><br></pre></td></tr></table></figure><h3 id="三、启动应用服务器"><a href="#三、启动应用服务器" class="headerlink" title="三、启动应用服务器"></a>三、启动应用服务器</h3><p>进入工作区目录，并启动这个应用。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my-website</span><br><span class="line">npm run start</span><br></pre></td></tr></table></figure><p>npm run start 命令会构建本应用、启动开发服务器、监听源文件，并且当那些文件发生变化时重新构建本应用，</p><p>也会打开浏览器，并访问 <a href="http://localhost:3000/">http://localhost:3000/</a> 。</p><p>你会发现本应用正运行在浏览器中。</p><p>参考文献：<a href="https://docusaurus.io/">https://docusaurus.io/</a></p><h2 id="云平台一键部署Docusaurus"><a href="#云平台一键部署Docusaurus" class="headerlink" title="云平台一键部署Docusaurus"></a>云平台一键部署Docusaurus</h2><h3 id="一、创建环境"><a href="#一、创建环境" class="headerlink" title="一、创建环境"></a>一、创建环境</h3><p>想要一键部署Docusaurus，需要以下账号和服务：</p><ul><li>Github账号 (<a href="https://github.com/">https://github.com/</a>)，</li><li>阿里云账号，并使用阿里云账号登录云开发平台 (<a href="https://workbench.aliyun.com/">https://workbench.aliyun.com/</a>)，为保证最好的使用体验，请使用Chrome浏览器。开通OSS服务。</li><li>未开通阿里云OSS的用户，点击链接 (<a href="https://workbench.aliyun.com/product/open?code=oss">https://workbench.aliyun.com/product/open?code=oss</a>)开通OSS服务。OSS开通免费，有一定的免费额度，超过额度之后按量付费。</li></ul><p><img src="https://static.luozhinet.com/15/77ea2ad6599518f5eb6f9209a988d9" alt="file"></p><h3 id="二、创建Docusaurus应用"><a href="#二、创建Docusaurus应用" class="headerlink" title="二、创建Docusaurus应用"></a>二、创建Docusaurus应用</h3><ul><li>创建前端应用。打开快速开始 <a href="https://workbench.aliyun.com/app%EF%BC%8C%E6%89%BE%E5%88%B0">https://workbench.aliyun.com/app，找到</a> Docusaurus 点击创建「创建应用」按钮。</li></ul><p><img src="https://static.luozhinet.com/e5/fa1a2e3433d3ebfc714e0afd15fbbd" alt="file"></p><ul><li>云资源访问授权。如果您之前没有使用过云开发平台，会出现云资源授权管理的选项，往下拉出现直至同意授权的字样，点击「同意授权」后出现授权成功，点击进入「下一步」。</li></ul><p><img src="https://static.luozhinet.com/59/b9a04f6be5f750d9dfe68e407be665" alt="file"></p><ul><li>绑定Github账号。授权完成后选择来源仓库为Github，按照提示点击去绑定，绑定GitHub帐号，登录后并点击Authorize Aliyunworkben允许云开发平台构建、发布你的GitHub代码为可访问的网站。</li></ul><p><img src="https://static.luozhinet.com/a9/2047604c441c0e57c1de841b2d1b95" alt="file"></p><ul><li>选择fork好的“Docusaurus”代码仓库。选择第一步中的代码仓库，主干分支，并点击下一步。主干分支一般指的是代码的master或main等分支。</li></ul><p><img src="https://static.luozhinet.com/d0/42d4db50208c77540466d72b3d7671" alt="file"></p><p>填写基本信息，完成创建。填写基本信息并点击「完成」。成功后进入到应用详情和部署界面。</p><p><img src="https://static.luozhinet.com/be/908c62d32e2ca543327a1d5c6a2449" alt="file"></p><h3 id="三、在日常环境部署"><a href="#三、在日常环境部署" class="headerlink" title="三、在日常环境部署"></a>三、在日常环境部署</h3><ul><li>一键进行应用部署。在应用详情页面点击日常环境的「部署」按钮进行一键部署，部署状态变成绿色已部署以后可以点击访问部署网站查看效果。</li></ul><p><img src="https://static.luozhinet.com/3d/e28cbccbc3aa2c1b0720f84e1ae37f" alt="file"></p><ul><li>访问Docusaurus网站。日常环境的测试域名也是可以访问的，点击访问已部署网站按钮会出现一个弹出，点击弹出上的立即访问就能够访问已经部署好的站点了。在部署完成后，可以继续本地编码，并将代码push到应用的“基本信息”中对应的代码仓库内。</li></ul><p><img src="https://static.luozhinet.com/57/18f35e9a0b0be012f69b3070447d47" alt="file"></p><h2 id="多端应用一键上云"><a href="#多端应用一键上云" class="headerlink" title="多端应用一键上云"></a>多端应用一键上云</h2><p>现如今身处在随时会到来新状况的大环境下，做好自己便是在不安中树立了一颗屹立不倒的松树。作为开发者们每天都要面临新的代码、应用，保持随时学习的状态和能力也可让自己多一份安稳。阿里云云开发平台的初衷是为每一位开发者提供免费、便捷的云上研发工作平台，通过学习与实操演练两种模式，从入门到精通快速上手Serverless和云开发技术。0门槛全云端开发、随时随地在线协同、业界领先Serverless架构、行业应用一件初始化等特性也通过每次的实践伴随着你、我。</p><p>云原生应用、主机应用部署、前端应用部署三大板块的提供，供开发者们找到最合适自己神器，令开发工作事半功倍。其中满足IoT语音技能、小程序、H5应用等开发者低门槛应用开发的需求；也支持代码编译部署到ECS主机服务器的场景，帮助用户管理传统主机应用的能力；让前后端应用能够更高效地协同。平台将持续与开发者一起共同成长，帮忙开发者更好、更快以及更低成本的开发，多端的应用更加快速的上云。</p><p><img src="https://static.luozhinet.com/17/4e28fae9a84c1001802e10a41a5493" alt="file"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Docusaurus </tag>
+            
+            <tag> 站点生成神器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>1分钟 Serverless极速搭建高性能网盘</title>
+      <link href="/posts/2bb24d491704/"/>
+      <url>/posts/2bb24d491704/</url>
+      
+        <content type="html"><![CDATA[<p>当前，网盘几乎已成为现代人的标配，而市面上的网盘功能、费用各异，让用户们陷入了对比价格和功能的迷阵中。别对比了，动手吧！作为对存储、流量、资源……最了解的“内行人”，自己搭建一个高性能网盘，才是开发者最极客、最具性价比的选择！</p><p>这一次我们基于 Serverless 应用中心 +阿里云函数计算+ 开源企业级在线文件管理系统 KodBox 打造场景，让你仅用”几次“点击，进入 Serverless 的世界，<strong>拥有一个可随意保存资源、不限速下载、多端使用、与朋友共享资源……的个人网盘。</strong></p><h2 id="体验有礼"><a href="#体验有礼" class="headerlink" title="体验有礼"></a>体验有礼</h2><p>5.9-5.20 ，自建真网盘，1 步可抢百变指尖陀螺</p><p>前往领取：<a href="https://developer.aliyun.com/adc/series/activity/serverlessapp">https://developer.aliyun.com/adc/series/activity/serverlessapp</a></p><h2 id="体验简介"><a href="#体验简介" class="headerlink" title="体验简介"></a>体验简介</h2><p>网盘已经逐渐成为现代人的标配，当前市面上的网盘众多，他们的主打功能类似，但是在付费、限速、附加功能等方面确有很大区别，也让广大用户陷入衡量性价比和功能的迷阵。</p><p>随着云计算的高速发展，Serverless 架构逐渐以低成本，高效能被开发者认可。那么是否可以基于 Serverless 架构快速搭建一个自己的网盘呢？这个网盘可以随意存资源、不限速下载、多端使用、与朋友共享资源…… ，答案是：当然可以！</p><p>本场景将使用阿里云函数计算，以及开源项目 Kodbox，带大家 1分钟 Serverless 极速搭建个人高性能网盘，网盘可长期使用。</p><p>什么是函数计算：函数计算是事件驱动的全托管计算服务。使用函数计算，您无需采购与管理服务器等基础设施，只需编写并上传代码。函数计算为您准备好计算资源，弹性地可靠地运行任务，并提供日志查询、性能监控和报警等功能。函数计算帮助您无需管理服务器（Serverless），仅专注于函数代码就能快速搭建应用。函数计算能够弹性地伸缩，您只需要按使用量付费。</p><p>什么是Kodbox：Kodbox是可道云推出的企业级私有云存储解决方案，旨在为中小企业提供安全可控、可靠易用的一站式在线文件存储管理与协同办公平台。</p><h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>在体验本场景之前，需要开通以下服务：</p><p>函数计算 FC：<a href="https://fcnext.console.aliyun.com/">https://fcnext.console.aliyun.com/</a></p><p>硬盘挂在 NAS：<a href="https://nasnext.console.aliyun.com/">https://nasnext.console.aliyun.com/</a></p><p>另外：本场景可能会产生费用，主要包括：</p><p>\1. 硬盘挂载存储费用：<a href="https://help.aliyun.com/document_detail/54301.html">https://help.aliyun.com/document_detail&#x2F;54301.html</a></p><p>\2. 函数计算资源使用费用：<a href="https://www.aliyun.com/price/product">https://www.aliyun.com/price/product</a></p><p>如需长期使用本网盘，请仔细阅读硬盘挂在存储费用（NAS）和函数计算（FC）资源使用费用，避免产生意料之外的费用；如仅为体验功能不做长期使用，请按照文档最后删除步骤，部署之后立即删除。</p><h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h4 id="开通业务"><a href="#开通业务" class="headerlink" title="开通业务"></a><strong>开通业务</strong></h4><p>开通以下服务：</p><p>函数计算 FC：<a href="https://fcnext.console.aliyun.com/">https://fcnext.console.aliyun.com/</a></p><p>硬盘挂在 NAS：<a href="https://nasnext.console.aliyun.com/">https://nasnext.console.aliyun.com/</a></p><h4 id="创建网盘"><a href="#创建网盘" class="headerlink" title="创建网盘"></a><strong>创建网盘</strong></h4><p>进入到函数计算控制台：<a href="https://fcnext.console.aliyun.com/overview">https://fcnext.console.aliyun.com/overview</a></p><p>点击左侧的应用按钮：</p><p><img src="http://static.luozhinet.com/4e/50dfa537cae4d5e471bf5a391dcaba" alt="img"></p><p>注：如果之前使用过应用中心，点击应用之后出现类似于下面的页面：</p><p><img src="http://static.luozhinet.com/38/148a056a26a6e979f74511b24c5e49" alt="img"></p><p>此时可以点击“创建应用”按钮继续流程。</p><p>点击应用&#x2F;创建应用之后，可以看到应用列表：</p><p><img src="http://static.luozhinet.com/7c/e33b39d1c107f98f3e0d5e5ebcb57b" alt="img"></p><p>此时选择“KodBox”即可：</p><p><img src="http://static.luozhinet.com/e1/ef4ab30316af45cd61d702d33dc05d" alt="img"></p><p>选择立即创建，然后选择直接部署：</p><p><img src="http://static.luozhinet.com/8d/fce51f32e00767d32acf3ab1b05302" alt="img"></p><p>此时还需要关注页面上角色名称部分，例如：</p><p><img src="http://static.luozhinet.com/ab/46d33847c415626a94471f19d56621" alt="img"></p><p>此时需要点击前往授权进行授权</p><p>完成之后点击页面最下面的创建按钮：</p><p><img src="http://static.luozhinet.com/f9/8c6ec341c802edd945d88ce6d8fe86" alt="img"></p><p>此处要稍等片刻，等待创建完成，可以看到访问域名：</p><p><img src="http://static.luozhinet.com/85/e6291bbfd9a840b0cf38bd21696993" alt="img"></p><p>此时可以打开访问域名进行登录测试：</p><p>测试账号：admin</p><p>测试密码：admin</p><p>后期自己可以修改账号密码。</p><p>此时自己的云网盘、云桌面就完成了：</p><p><img src="http://static.luozhinet.com/a4/0d2b80d5eeb0e4b16038671197d30c" alt="img"></p><h2 id="资源删除"><a href="#资源删除" class="headerlink" title="资源删除"></a><strong>资源删除</strong></h2><p>本操作中中的部署过程是免费的，但是在后期的使用过程是会产生一定的费用，主要包括：</p><p>\1. NAS的存储费用，具体的费用参考：<a href="https://www.aliyun.com/price/product?spm=5176.59209.J_5834642020.11.1ce176b9ut6vjT#/nas/detail/nas_bag">https://www.aliyun.com/price/product?spm=5176.59209.J_5834642020.11.1ce176b9ut6vjT#&#x2F;nas&#x2F;detail&#x2F;nas_bag</a></p><p>\2. 函数计算的资源使用费用，具体的费用参考：<a href="https://help.aliyun.com/document_detail/54301.html?spm=5176.137990.J_5253785160.6.6bbc1608aysgbJ">https://help.aliyun.com/document_detail&#x2F;54301.html?spm&#x3D;5176.137990.J_5253785160.6.6bbc1608aysgbJ</a></p><p>所以您之后如果需要上传、下载等操作，可能都会涉及到相关得用，如果您为了避免费用的产生，您可以删除相对应的资源：</p><p>\1. 删除帮您创建的硬盘挂载服务，NAS控制台: <a href="https://nasnext.console.aliyun.com/">https://nasnext.console.aliyun.com/</a></p><p>\2. 删除帮助您创建的函数计算服务，函数计算控制台：<a href="https://fcnext.console.aliyun.com/">https://fcnext.console.aliyun.com/</a></p><p>另外，您也可以点击应用中心右上角的删除服务，通过弹出的窗口，点击右边 <strong>ID&#x2F;NAME</strong> 的超链接，进行对应资源的删除。</p><p><img src="http://static.luozhinet.com/a3/105086380f006129ccdb04f7ee378b" alt="img"></p><p>需要注意的是，如果您通过其他途径&#x2F;渠道对要删除的硬盘挂载或者函数计算资源进行了使用，请注意删除后的影响。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 高性能网盘 </tag>
+            
+            <tag> serverless </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>批量删除微信好友技巧经验分享</title>
+      <link href="/posts/41c16cb60b68/"/>
+      <url>/posts/41c16cb60b68/</url>
+      
+        <content type="html"><![CDATA[<p><img src="http://static.luozhinet.com/21/2517af7e2a5843d564b27e6b916c1b" alt="批量删除微信好友技巧经验分享" title="批量删除微信好友技巧经验分享"></p><p><img src="http://static.luozhinet.com/28/f9bba74a306ca73109e5615ed2aacb" alt="批量删除微信好友技巧经验分享" title="批量删除微信好友技巧经验分享"></p><p><strong>教程：</strong><br>1.新建一个标签，将需要删除的好友加入标签。<br>2.在通讯录首页上方的搜索框刚才新建的标签，点击下方的更多联系人。<br>3.点击右上角的管理，而后进行勾选，勾选完成点击下方的删除，即可删除完成。 </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技巧分享 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 技巧 </tag>
+            
+            <tag> 微信 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>怎么查看微信授权过哪些应用技巧</title>
+      <link href="/posts/b478f3198c73/"/>
+      <url>/posts/b478f3198c73/</url>
+      
+        <content type="html"><![CDATA[<p>怎么查看微信授权过哪些应用技巧</p><p>在使用一些网站或者APP应用程序的时候，为了避免注册帐号的麻烦，<br>我们经常会使用QQ或者微信来授权登录。虽然说这样的操作使用起来非常方便，<br>但是长期以往可能会忘记了我们曾经授权过哪些应用和网站，<br>无形之中会造成个人隐私的泄露和一些安全隐患。<br>教大家怎样快速查看微信授权过哪些应用，并一键取消授权。<br>确认版本信息无误后，点右下角的【我】-【设置】</p><p><img src="http://static.luozhinet.com/6b/6484e8150c09875d7ba87a128ebd03" alt="怎么查看微信授权过哪些应用技巧" title="怎么查看微信授权过哪些应用技巧"></p><p>再选择【隐私】之后滑动到最底部的位置，选择【授权管理】</p><p><img src="http://static.luozhinet.com/94/2137052c9f84aa8b5abeb86ad1f768" alt="怎么查看微信授权过哪些应用技巧" title="怎么查看微信授权过哪些应用技巧"></p><p>在这里可以看到你曾经用微信授权过的所有的应用，再点右上角的【管理】，<br>可以对不需要继续授权的应用删除授权。</p><p><img src="http://static.luozhinet.com/ff/3ee832c90cc271864545b28118e3f3" alt="怎么查看微信授权过哪些应用技巧" title="怎么查看微信授权过哪些应用技巧"></p><p>另外，这些授权会在【朋友关系】中显示。通俗的讲，就是你在用微信授权了一个应用，<br>你的微信好友也授权了这个应用，那么在应用中就可以相互看到应用中的动态。<br>如果不想让对方看到的话，关闭这个朋友关系就可以了。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技巧分享 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 技巧 </tag>
+            
+            <tag> 操作 </tag>
+            
+            <tag> 授权 </tag>
+            
+            <tag> 微信 </tag>
+            
+            <tag> 应用 </tag>
+            
+            <tag> 查看 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>家里WiFi密码忘记了如何通过电脑查看</title>
+      <link href="/posts/d911ff6fb3e3/"/>
+      <url>/posts/d911ff6fb3e3/</url>
+      
+        <content type="html"><![CDATA[<p>家里WiFi密码忘记了如何通过电脑查看</p><p>想要查询电脑连线过的 WiFi 密码是什么？<br>忘记家里 WiFi 密码该如何查询呢？<br>查看电脑连接的当前WiFi的密码，以下教学适用于Windows 系统。<br>首先进入”设置” &gt;「网络和Internet」</p><p><img src="http://static.luozhinet.com/73/1ca6cc6131b072940becc5ab046c52" alt="家里WiFi密码忘记了如何通过电脑查看" title="家里WiFi密码忘记了如何通过电脑查看"></p><p>点击左侧的WLAN，再到右侧「相关设置」&gt;「更改适配器选项」</p><p><img src="http://static.luozhinet.com/a7/9c83629de972ebff673c2f4dd7f8c6" alt="家里WiFi密码忘记了如何通过电脑查看" title="家里WiFi密码忘记了如何通过电脑查看"></p><p>找到 WiFi （WLAN）名称按下右键，选择「状态」。</p><p><img src="http://static.luozhinet.com/d3/97fbab2707652b40951a2862035b8a" alt="家里WiFi密码忘记了如何通过电脑查看" title="家里WiFi密码忘记了如何通过电脑查看"></p><p>选择「无线属性」</p><p><img src="http://static.luozhinet.com/fd/0bc7507540a14c109123afc37e71fd" alt="家里WiFi密码忘记了如何通过电脑查看" title="家里WiFi密码忘记了如何通过电脑查看"></p><p>最后到「安全」选项卡，勾选✔”显示字符”就能够看到 WiFi 密码啰！跟着做一遍看看能否挖出连线过的无线网络密码吧。</p><p><img src="http://static.luozhinet.com/9b/44fa943b52ac6ddd0616fe73a815c6" alt="家里WiFi密码忘记了如何通过电脑查看" title="家里WiFi密码忘记了如何通过电脑查看"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技巧分享 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 密码 </tag>
+            
+            <tag> wifi </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>QQ超极会员开启自动续费QQ等级加速0.2天</title>
+      <link href="/posts/8ef6e275fcc9/"/>
+      <url>/posts/8ef6e275fcc9/</url>
+      
+        <content type="html"><![CDATA[<p>新加速0.2次日生效 点开超会自动续费(不到期不花钱 )</p><p><a href="https://my.pay.qq.com/account/index.shtml#service">https://my.pay.qq.com/account/index.shtml#service</a></p><p>每月领一个月成长加速包</p><p><a href="https://act.qzone.qq.com/v2/vip/tx/p/41447_3eba41b5">https://act.qzone.qq.com/v2/vip/tx/p/41447_3eba41b5</a></p><p>打开进去开启’自动续费就行 不到期就不会扣费<br><img src="/images/pasted-QQ%E4%BC%9A%E5%91%98%E7%BB%AD%E8%B4%B9.png" alt="QQ会员续费"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 福利活动 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> QQ加速 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>docker安装与配置nginx详细过程</title>
+      <link href="/posts/6cb2454df473/"/>
+      <url>/posts/6cb2454df473/</url>
+      
+        <content type="html"><![CDATA[<!--markdown-->此方式只用于快速搭建使用<ul><li>第一步 pull nginx</li></ul><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull nginx </span><br></pre></td></tr></table></figure><ul><li><p>第二步 启动nginx</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx -p 80:80 -d </span><br></pre></td></tr></table></figure></li><li><p>第三步 查看成果<br>1）命令查看是否启动，命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure><p>2）网页访问，浏览器输入IP地址回车，就可以看到 “Welcome to nginx!”</p></li></ul><hr><p><strong>附加项</strong>：<br>原因：虽然咱们能正常启动nginx，但配置得在容器中进行，这样的话太麻烦了，所以把配置文件给映射出来，方便配置与管理</p><ul><li>第一步 本地创建管理目录</li></ul><p>命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /data/nginx</span><br><span class="line"><span class="built_in">mkdir</span> -p /data/nginx/www</span><br><span class="line"><span class="built_in">mkdir</span> -p /data/nginx/conf</span><br><span class="line"><span class="built_in">mkdir</span> -p /data/nginx/logs </span><br></pre></td></tr></table></figure><ul><li>第二步 将容器中的相应文件copy到刚创建的管理目录中<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">cp</span> 67e:/etc/nginx/nginx.conf /data/nginx/</span><br><span class="line">docker <span class="built_in">cp</span> 67e:/etc/nginx/conf.d /data/nginx/conf/</span><br><span class="line">docker <span class="built_in">cp</span> 67e:/usr/share/nginx/html/ /data/nginx/www/</span><br><span class="line">docker <span class="built_in">cp</span> 67e:/var/log/nginx/ /data/nginx/logs/</span><br><span class="line">---</span><br><span class="line">注：docker <span class="built_in">cp</span> 67e 中的 <span class="string">&quot;67e&quot;</span> 为容器ID前缀，只要唯一就好了 </span><br><span class="line"></span><br><span class="line">* 第三步 停止并移除容器</span><br><span class="line"></span><br><span class="line">停止容器：</span><br><span class="line">```bash</span><br><span class="line">docker stop 67e</span><br></pre></td></tr></table></figure>移除容器：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">rm</span> 67e </span><br></pre></td></tr></table></figure></li><li>第四步 再次启动容器并作目录挂载(也相当于共享)<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx -p 80:80 </span><br><span class="line">-v /data/nginx/nginx.conf:/etc/nginx/nginx.conf</span><br><span class="line">-v /data/nginx/www/:/usr/share/nginx/html/</span><br><span class="line">-v /data/nginx/logs/:/var/log/nginx/</span><br><span class="line">-v /data/nginx/conf/:/etc/nginx/conf.d</span><br><span class="line">--privileged=<span class="literal">true</span> -d nginx</span><br></pre></td></tr></table></figure>注：为了好看所以做了换行，执行的时候还是需要改成一行，每行一个空格隔开就可以了<br>部署就完成了！！！<br>彩蛋（配置相关）：</li><li>1、在location 中 echo “hello Nginx！” 访问可以直接输出文字</li></ul><p>例：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello Nginx！&quot;</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure><ul><li>2、location匹配规则：</li></ul><p>1）最低级别匹配规则：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello Nginx！&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>2）最高级别匹配规则：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /user &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello user.hmtl&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>3）其它级别匹配规则：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /user &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello user.hmtl&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">location ~^ /user &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello user.hmtl&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">location ~ ^/[a-z] &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello user.hmtl&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">location ~ ^/\a &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;hello user.hmtl&quot;</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure><ul><li><p>3、反向代理细节：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">location /user &#123;</span><br><span class="line">    proxy_pass http:https://ip;</span><br><span class="line">&#125;</span><br><span class="line">location /order/ &#123;</span><br><span class="line">    proxy_pass http:https://ip/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>访问结果：<br>http:<a href="https://ip/user/xx">https://ip/user/xx</a>…<br>http:<a href="https://ip/xx">https://ip/xx</a>… </p></li><li><p>4、负载均衡配置</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">upstream order &#123;</span><br><span class="line">    server 192.168.5.18:8080 weight=1;</span><br><span class="line">    server 192.168.5.18:8081 weight=1;</span><br><span class="line">&#125;</span><br><span class="line">server&#123;</span><br><span class="line">    location /order/ &#123;</span><br><span class="line">        proxy_pass http:https://order/;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>注：weight&#x3D;1，配置的为权重，值越高权重越高</p></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> nginx </tag>
+            
+            <tag> docker </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>告别无法访问的Github</title>
+      <link href="/posts/15fa81012f63/"/>
+      <url>/posts/15fa81012f63/</url>
+      
+        <content type="html"><![CDATA[<p>最近在使用github的时候又登不上去了<br>据说是某些不可描述的有关组织机构对该网站的DNS污染或者随机丢包造成的</p><p><strong>什么是DNS污染呢？</strong></p><p>本来很多域名对应的IP地址都是由上游可信赖的服务器提供的，这样可以降低网络上的流量压力</p><p>但是对于有些攻击来说，他就去污染可信赖服务器里数据包，这样我一请求github，都给我登上了错误的服务器或服务器的网址</p><p>这样的DNS攻击让我打不开还算好的，一旦让我打开些不可描述的网站，那在公共场合不得社死</p><p><strong>github解决办法</strong></p><p>但是自己很多项目都存在github，登不上去那不得损失很大</p><p>所以一行必须整点儿特殊手段来访问，顺便分享一下</p><h3 id="1-加速器"><a href="#1-加速器" class="headerlink" title="1.加速器"></a><strong>1.加速器</strong></h3><p>网上很多解决方案都是在分享各种加速器来登陆、像下面这个Pigcha加速器可以登陆github</p><p>但大部分都是一些软件商的软文，先体验再收费，但是对于网络登录看完下面的分享就没必要再去付费了</p><h3 id="2-修改本地host"><a href="#2-修改本地host" class="headerlink" title="2.修改本地host"></a><strong>2.修改本地host</strong></h3><p>既然上游服务器的域名地址被修改了，那我们直接在本地hosts文件了指定好域名对应的IP地址不就好了嘛</p><p>hosts 文件在每个系统的位置不一，详情如下：</p><ul><li>Windows 系统：C:\Windows\System32\drivers\etc\hosts</li><li>Linux 系统：&#x2F;etc&#x2F;hosts</li><li>Mac（苹果电脑）系统：&#x2F;etc&#x2F;hosts</li><li>Android（安卓）系统：&#x2F;system&#x2F;etc&#x2F;hosts</li><li>iPhone（iOS）系统：&#x2F;etc&#x2F;hosts</li></ul><p>然后将下面这些数据拷贝到自己电脑的hosts文件，再激活生效就可以了</p><figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">140.82.114.25</span>                 alive.github.com</span><br><span class="line"><span class="number">140.82.112.25</span>                 live.github.com</span><br><span class="line"><span class="number">185.199.108.154</span>               github.githubassets.com</span><br><span class="line"><span class="number">140.82.112.22</span>                 central.github.com</span><br><span class="line"><span class="number">185.199.108.133</span>               desktop.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.153</span>               assets-cdn.github.com</span><br><span class="line"><span class="number">185.199.108.133</span>               camo.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               github.map.fastly.net</span><br><span class="line"><span class="number">199.232.69.194</span>                github.global.ssl.fastly.net</span><br><span class="line"><span class="number">140.82.112.4</span>                  gist.github.com</span><br><span class="line"><span class="number">185.199.108.153</span>               github.io</span><br><span class="line"><span class="number">140.82.114.4</span>                  github.com</span><br><span class="line"><span class="number">192.0.66.2</span>                    github.blog</span><br><span class="line"><span class="number">140.82.112.6</span>                  api.github.com</span><br><span class="line"><span class="number">185.199.108.133</span>               raw.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               user-images.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               favicons.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars5.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars4.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars3.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars2.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars1.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars0.githubusercontent.com</span><br><span class="line"><span class="number">185.199.108.133</span>               avatars.githubusercontent.com</span><br><span class="line"><span class="number">140.82.112.10</span>                 codeload.github.com</span><br><span class="line"><span class="number">52.217.223.17</span>                 github-cloud.s3.amazonaws.com</span><br><span class="line"><span class="number">52.217.199.41</span>                 github-com.s3.amazonaws.com</span><br><span class="line"><span class="number">52.217.93.164</span>                 github-production-release-asset-2e65be.s3.amazonaws.com</span><br><span class="line"><span class="number">52.217.174.129</span>                github-production-user-asset-6210df.s3.amazonaws.com</span><br><span class="line"><span class="number">52.217.129.153</span>                github-production-repository-file-5c1aeb.s3.amazonaws.com</span><br><span class="line"><span class="number">185.199.108.153</span>               githubstatus.com</span><br><span class="line"><span class="number">64.71.144.202</span>                 github.community</span><br><span class="line"><span class="number">23.100.27.125</span>                 github.dev</span><br><span class="line"><span class="number">185.199.108.133</span>               media.githubusercontent.com</span><br></pre></td></tr></table></figure><p>大部分情况下是直接生效，如未生效可尝试下面的办法，刷新 DNS：</p><ul><li>Windows：在 CMD 窗口输入：ipconfig &#x2F;flushdns</li><li>Linux 命令：sudo nscd restart，如报错则须安装：sudo apt install nscd 或 sudo &#x2F;etc&#x2F;init.d&#x2F;nscd restart</li><li>Mac 命令：sudo killall -HUP mDNSResponder</li></ul><p>如果还没有生效的话，可以尝试重启一下电脑，毕竟这步操作可以解决 95 % 的电脑bug</p><p>当然还有一些自动修改hosts文件的软件，但是有一定的风险性，所以如果手动修改hosts也没用的话，建议再参考一下镜像通道</p><h3 id="3-镜像通道"><a href="#3-镜像通道" class="headerlink" title="3.镜像通道"></a><strong>3.镜像通道</strong></h3><p>如果手动修改hosts还不行的话，可以尝试使用镜像通道</p><p>例如原始用法是：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/PaddlePaddle/PaddleDetection</span><br></pre></td></tr></table></figure><p>那加速通道就是：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://hub.fastgit.org/PaddlePaddle/PaddleDetection.git</span><br></pre></td></tr></table></figure><p>也就是github clone加速的时候，前面的域名用<a href="https://hub.fastgit.org/">https://hub.fastgit.org/</a> 来替换掉<a href="https://github.com就行啦!/">https://github.com就行啦！</a></p><p>当然，对于镜像通道也可以使用fastgit的开源软件：<a href="https://github.com/xljiulang/FastGithub">https://github.com/xljiulang/FastGithub</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> github </tag>
+            
+            <tag> dns </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>CSS 实现新拟态(Neumorphism) UI 风格</title>
+      <link href="/posts/ebffabd07766/"/>
+      <url>/posts/ebffabd07766/</url>
+      
+        <content type="html"><![CDATA[<p>什么是新拟态(Neumorphism) UI 风格？网上似乎还没有一个准确统一的定义。按照我个人的通俗理解，就是将界面的一部分凸起来，另一部分凹下去，形成的一种错落有致的拟物风格。代表作是乌克兰设计师 Alexander Plyuto 在各平台发布的新作品「Skeuomorph Mobile Banking」<br><img src="https://luozhinet.com/postfile/2021/03/1588615345.png" alt="Skeuomorph Mobile Banking"></p><h3 id="新拟态-UI-风格与扁平、投影风格的对比"><a href="#新拟态-UI-风格与扁平、投影风格的对比" class="headerlink" title="新拟态 UI 风格与扁平、投影风格的对比"></a>新拟态 UI 风格与扁平、投影风格的对比</h3><p>从上面这张对比图可以看出，扁平风格就像是一张纸贴在墙面上，投影风格像是浮在半空中，而新拟态风格则像是墙面上直接凸起了一块。<br><img src="https://luozhinet.com/postfile/2021/03/333092447.jpg" alt="1"></p><h3 id="新拟态-UI-实现的方式"><a href="#新拟态-UI-实现的方式" class="headerlink" title="新拟态 UI 实现的方式"></a>新拟态 UI 实现的方式</h3><p>要实现这种风格，精髓在于一个白色的阴影+一个常规阴影。一个示例如下图所示：<br><img src="https://luozhinet.com/postfile/2021/03/3679197349.jpg" alt="16-39-31-031.jpg"></p><h3 id="新拟态-UI-风格的前端实现"><a href="#新拟态-UI-风格的前端实现" class="headerlink" title="新拟态 UI 风格的前端实现"></a>新拟态 UI 风格的前端实现</h3><p>线工具直接生成这种风格的 CSS 代码，很强！Neumorphism CSS 在线生成器地址：<a href="https://neumorphism.io/">https://neumorphism.io</a></p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#ecf0f3</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="selector-tag">div</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: relative;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">float</span>: left;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin-left</span>: <span class="number">80px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin-top</span>: <span class="number">80px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#ecf0f3</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="selector-class">.drop-shadow</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">20px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">18px</span> <span class="number">18px</span> <span class="number">30px</span> <span class="number">#d1d9e6</span>, -<span class="number">18px</span> -<span class="number">18px</span> <span class="number">30px</span> <span class="number">#fff</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="selector-class">.inner-shadow</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">20px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: inset <span class="number">18px</span> <span class="number">18px</span> <span class="number">30px</span> <span class="number">#d1d9e6</span>, inset -<span class="number">18px</span> -<span class="number">18px</span> <span class="number">30px</span> <span class="number">#fff</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="selector-class">.inner-shadow-ring</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: inset <span class="number">9px</span> <span class="number">9px</span> <span class="number">15px</span> <span class="number">#d1d9e6</span>, inset -<span class="number">9px</span> -<span class="number">9px</span> <span class="number">15px</span> <span class="number">#fff</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="selector-class">.inner-shadow-ring</span><span class="selector-pseudo">:before</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="string">&quot;&quot;</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: absolute;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">left</span>: <span class="number">20%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">top</span>: <span class="number">20%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">60%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">60%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#ecf0f3</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">9px</span> <span class="number">9px</span> <span class="number">15px</span> <span class="number">#d1d9e6</span>, -<span class="number">9px</span> -<span class="number">9px</span> <span class="number">15px</span> <span class="number">#fff</span>;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;drop-shadow&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;inner-shadow&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;inner-shadow-ring&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 技术教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> css </tag>
+            
+            <tag> 新拟态 </tag>
+            
+            <tag> Neumorphism </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Hello World</title>
+      <link href="/posts/edc724f3bf5b/"/>
+      <url>/posts/edc724f3bf5b/</url>
+      
+        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>

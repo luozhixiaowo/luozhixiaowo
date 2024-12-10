@@ -1,0 +1,8 @@
+/**
+ * Minified by jsDelivr using clean-css v4.2.3.
+ * Original file: /npm/hexo-butterfly-footer-beautify@1.0.0/lib/runtime.css
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+@font-face{font-family:UnidreamLED;src:url(https://unpkg.zhimg.com/akilar-candyassets/fonts/UnidreamLED.ttf);font-display:swap}div#runtime{width:180px;margin:auto;color:#fff;padding-inline:5px;border-radius:10px;background-color:rgba(0,0,0,.7);font-family:UnidreamLED}[data-theme=dark] div#runtime{color:#28b4c8;box-shadow:0 0 5px rgba(28,69,218,.71);animation:flashlight 1s linear infinite alternate}a.github-badge:hover:before{position:fixed;width:fit-content;margin:auto;left:0;right:0;top:10%;border-radius:10px;text-align:center;z-index:100;content:attr(data-title);font-size:20px;color:#fff;padding:10px;background-color:var(--text-bg-hover)}[data-theme=dark] a.github-badge:hover:before{background-color:rgba(18,18,18,.8)}@-moz-keyframes flashlight{from{box-shadow:0 0 5px #1478d2}to{box-shadow:0 0 2px #1478d2}}@-webkit-keyframes flashlight{from{box-shadow:0 0 5px #1478d2}to{box-shadow:0 0 2px #1478d2}}@-o-keyframes flashlight{from{box-shadow:0 0 5px #1478d2}to{box-shadow:0 0 2px #1478d2}}@keyframes flashlight{from{box-shadow:0 0 5px #1478d2}to{box-shadow:0 0 2px #1478d2}}
+/*# sourceMappingURL=/sm/95848c5b555b6a7d53d84798b07e655a6cddc3ac98053f5bb370cfa4f7893837.map */

@@ -1,0 +1,9 @@
+.aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+  left: -66px !important;
+  /* Ĭ��������������66px��ֻ��һ���ͷ���� */
+}
+
+.aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+  left: 0 !important;
+  /* �����ͣ������������㣬��ȫ��ʾ��ť */
+}
